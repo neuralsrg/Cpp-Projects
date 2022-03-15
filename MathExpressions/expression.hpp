@@ -38,7 +38,7 @@ public:
 
 	/* Overloading operators */
 	friend std::unique_ptr<Expression> operator+(std::unique_ptr<Expression>,
-			std::unique_ptr<Expression>);
+			const Variable&);
 
 	/* If the argument has type *double, then we have to delete it */
 	~Expression();
