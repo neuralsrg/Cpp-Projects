@@ -1,42 +1,32 @@
 #include "expression.hpp"
 
-Expression::Expression(const Variable& var) : expressionVariable(&var),
-	arg1(&var), arg2(nullptr), operation(0) {}
-
-Expression::Expression(double val) : expressionVariable(nullptr),
-	arg1(nullptr), arg2(new double(val)), operation(0) {}
-
-Expression::Expression(const Expression &a1, const Expression &a2, char op)
+Expression::Expression(std::unique_ptr<Expression> arg1,
+		std::unique_ptr<Expression> arg2, char op)
 {
-	if (a1.expressionVariable != a2.expressionVariable) {
+	if ((arg1->expressionVariable) && (arg1->expressionVariable)
+			&& (arg1->expressionVariable != arg2->expressionVariable)) {
 		std::cout << "ERROR: Multiple variable expression!" << std::endl;
-		return;
+		exit(1);
 	}	
-	expressionVariable = a1.expressionVariable;
-	arg1 = &a1;
-	arg2 = &a2;
+	expressionVariable = std::move(arg1->expressionVariable);
+	left = std::move(arg1);
+	right = std::move(arg2);
+	std::unique_ptr<Variable> tmp;
+	var = std::move(tmp);
 	operation = op;
 }
 
 std::ostream& operator<<(std::ostream& cout, const Expression& ex)
 {
-	if (!ex.operation) {
-		if (!ex.arg1)
-			cout << ' ' << *(double *)ex.arg2 << ' ';
-		else 
-			cout << ' ' << *(Variable *)ex.arg1 << ' ';
-	} else 
-		cout << *(Expression *)ex.arg1 << ex.operation << *(Expression *)ex.arg2;
+	if (ex.var)
+		cout << *ex.var;
+	else 
+		cout << *ex.left << ex.operation << *ex.right;
 	return cout;
 }
 
-Expression operator+(const Expression& ex1, const Expression& ex2)
+std::unique_ptr<Expression> operator+(std::unique_ptr<Expression> arg1,
+		std::unique_ptr<Expression> arg2)
 {
-	return Expression(ex1, ex2, '+');
-}
-
-Expression::~Expression()
-{
-	if ((operation == 0) && (!arg1))
-		delete (double *)arg2;
+	return std::make_unique<Expression>(arg1, arg2, '+');
 }

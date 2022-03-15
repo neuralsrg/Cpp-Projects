@@ -8,17 +8,29 @@
 #define VARIABLE_HPP_SENTRY
 
 #include <iostream>
+#include <memory>
+#include "expression.hpp"
 
 class Variable {
 	
 	std::string name;
+	double numValue;
 
 public:
 
-	/* Each Variable must have a name */
+	/* Variable can have a name */
 	Variable(std::string);
+	/* Or it can be a nameless number */
+	Variable(double);
+
 	/* Prints information about Variable */
 	friend std::ostream& operator<<(std::ostream&, const Variable&);
+
+	/* Overloading operations */
+	friend std::unique_ptr<Expression> operator+(const Variable&, const Variable&);
+	friend std::unique_ptr<Expression> operator-(const Variable&, const Variable&);
+	friend std::unique_ptr<Expression> operator*(const Variable&, const Variable&);
+	friend std::unique_ptr<Expression> operator/(const Variable&, const Variable&);
 
 };
 
