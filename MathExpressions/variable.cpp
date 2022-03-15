@@ -13,7 +13,17 @@ std::ostream& operator<<(std::ostream& cout, const Variable& var)
 	return cout;
 }
 
+
 std::unique_ptr<Expression> operator+(const Variable& left, const Variable& right)
 {
-	
+	return std::make_unique<Expression>(std::make_unique<Expression>(left),
+			std::make_unique<Expression>(right), '+');
 }
+
+/*
+Variable operator+(const Variable& left, const Variable& right)
+{
+	return Variable(12);
+}
+*/
+

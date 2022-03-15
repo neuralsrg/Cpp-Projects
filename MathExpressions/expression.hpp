@@ -10,6 +10,8 @@
 #ifndef EXPRESSION_HPP_SENTRY
 #define EXPRESSION_HPP_SENTRY
 
+class Variable;
+
 #include <iostream>
 #include <memory>
 #include <utility>
@@ -17,18 +19,17 @@
 
 class Expression {
 	
+public:
 	/* We calculate the expression of this Variable*/
-	/* Can be undefined for inner objects*/
+	/* This ptr is passed to the last term of the Expression */
 	std::unique_ptr<Variable> expressionVariable;
 	/* It can contain either operation arguments */
 	std::unique_ptr<Expression> left, right;
-	/* Or the single Variable (bottom level) */
-	std::unique_ptr<Variable> var;
 	/* The operation sign */
 	char operation;
 
-public:
-
+	/* Variable to Expression */
+	Expression(const Variable&);
 	/* 2 Expressions and operation in-between can be converted to Expression */
 	Expression(std::unique_ptr<Expression>, std::unique_ptr<Expression>, char);
 
