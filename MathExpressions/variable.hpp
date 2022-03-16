@@ -28,11 +28,10 @@ public:
 	/* Prints information about Variable */
 	friend std::ostream& operator<<(std::ostream&, const Variable&);
 	/* Get Variable name */
-	std::string getName() { return name; }
+	std::string getName() const { return name; }
 
 	/* Overloading operations */
 	friend std::unique_ptr<Expression> operator+(const Variable&, const Variable&);
-	//friend Variable operator+(const Variable&, const Variable&);
 	friend std::unique_ptr<Expression> operator-(const Variable&, const Variable&);
 	friend std::unique_ptr<Expression> operator*(const Variable&, const Variable&);
 

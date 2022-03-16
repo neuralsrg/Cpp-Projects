@@ -13,6 +13,8 @@ std::ostream& operator<<(std::ostream& cout, const Variable& var)
 	return cout;
 }
 
+/* Also possible to overload all these operators as friend functions
+ * of Expression. But this doesn't make any considerable changes */
 
 std::unique_ptr<Expression> operator+(const Variable& left, const Variable& right)
 {
@@ -20,10 +22,14 @@ std::unique_ptr<Expression> operator+(const Variable& left, const Variable& righ
 			std::make_unique<Expression>(right), '+');
 }
 
-/*
-Variable operator+(const Variable& left, const Variable& right)
+std::unique_ptr<Expression> operator-(const Variable& left, const Variable& right)
 {
-	return Variable(12);
+	return std::make_unique<Expression>(std::make_unique<Expression>(left),
+			std::make_unique<Expression>(right), '-');
 }
-*/
 
+std::unique_ptr<Expression> operator*(const Variable& left, const Variable& right)
+{
+	return std::make_unique<Expression>(std::make_unique<Expression>(left),
+			std::make_unique<Expression>(right), '*');
+}

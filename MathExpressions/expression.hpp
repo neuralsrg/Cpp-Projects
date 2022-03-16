@@ -22,7 +22,7 @@ class Expression {
 public:
 	/* We calculate the expression of this Variable*/
 	/* This ptr is passed to the last term of the Expression */
-	std::unique_ptr<Variable> expressionVariable;
+	std::shared_ptr<Variable> expressionVariable;
 	/* It can contain either operation arguments */
 	std::unique_ptr<Expression> left, right;
 	/* The operation sign */
@@ -38,8 +38,27 @@ public:
 
 	/* Overloading operators */
 	friend std::unique_ptr<Expression> operator+(std::unique_ptr<Expression>,
+			std::unique_ptr<Expression>);
+	friend std::unique_ptr<Expression> operator+(std::unique_ptr<Expression>,
 			const Variable&);
+	friend std::unique_ptr<Expression> operator+(const Variable&,
+			std::unique_ptr<Expression>);
 
+	friend std::unique_ptr<Expression> operator-(std::unique_ptr<Expression>,
+			std::unique_ptr<Expression>);
+	friend std::unique_ptr<Expression> operator-(std::unique_ptr<Expression>,
+			const Variable&);
+	friend std::unique_ptr<Expression> operator-(const Variable&,
+			std::unique_ptr<Expression>);
+
+	friend std::unique_ptr<Expression> operator*(std::unique_ptr<Expression>,
+			std::unique_ptr<Expression>);
+	friend std::unique_ptr<Expression> operator*(std::unique_ptr<Expression>,
+			const Variable&);
+	friend std::unique_ptr<Expression> operator*(const Variable&,
+			std::unique_ptr<Expression>);
+
+	/* Handles calls like f(y), f(x * x - 2 * x) */
 	/* If the argument has type *double, then we have to delete it */
 	~Expression();
 };
