@@ -65,6 +65,7 @@ public:
 	/* Handles calls like f(y), f(x * x - 2 * x) */
 	void changeDependencies(std::shared_ptr<Expression>);
 	std::shared_ptr<Expression> interceptPropagation(std::shared_ptr<Expression>);
+	std::shared_ptr<Expression> interceptPropagation(const Variable&);
 
 	~Expression() {}
 };

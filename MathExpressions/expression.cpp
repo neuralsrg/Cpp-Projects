@@ -124,30 +124,46 @@ void Expression::changeDependencies(std::shared_ptr<Expression> newE)
 {
 	/* Looks like impossible, but... */
 	assert(left && right && "changeDependencies got Variable-like Expression!");
-	if (!left->operation && !right->operation) {
+	bool left_named = left->expressionVariable->getName() != "";
+	bool right_named = right->expressionVariable->getName() != "";
+
+	if (!left->operation && left_named && !right->operation && right_named) {
 		left = newE;
 		right = newE;
 		return;
 	}
-	if (!left->operation) {
+	if (!left->operation && left_named) {
 		left = newE;
-		right->changeDependencies(newE);
+		if (right_named)
+			right->changeDependencies(newE);
 		return;
 	}
-	if (!right->operation) {
+	if (!right->operation && right_named) {
 		right = newE;
+		if (left_named)
+			left->changeDependencies(newE);
+		return;
+	}
+	if (left->operation && right->operation) {
 		left->changeDependencies(newE);
-		return;
+		right->changeDependencies(newE);
 	}
-	left->changeDependencies(newE);
-	right->changeDependencies(newE);
 }
 
 std::shared_ptr<Expression> Expression::interceptPropagation(std::shared_ptr<Expression> e)
 {
+	if (!operation) {
+		if (expressionVariable->getName() != "")
+			return e;
+		else 
+			return std::make_shared<Expression>(expressionVariable);
+	}
 	auto copy = this->deepCopy();	
-	if (!copy->operation)
-		return e;
 	copy->changeDependencies(e);
 	return copy;
+}
+
+std::shared_ptr<Expression> Expression::interceptPropagation(const Variable& var)
+{
+	return interceptPropagation(std::make_shared<Expression>(var));
 }
