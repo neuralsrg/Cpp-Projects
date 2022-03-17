@@ -31,9 +31,9 @@ public:
 	std::string getName() const { return name; }
 
 	/* Overloading operations */
-	friend std::unique_ptr<Expression> operator+(const Variable&, const Variable&);
-	friend std::unique_ptr<Expression> operator-(const Variable&, const Variable&);
-	friend std::unique_ptr<Expression> operator*(const Variable&, const Variable&);
+	friend std::shared_ptr<Expression> operator+(const Variable&, const Variable&);
+	friend std::shared_ptr<Expression> operator-(const Variable&, const Variable&);
+	friend std::shared_ptr<Expression> operator*(const Variable&, const Variable&);
 
 };
 

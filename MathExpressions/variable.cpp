@@ -16,20 +16,20 @@ std::ostream& operator<<(std::ostream& cout, const Variable& var)
 /* Also possible to overload all these operators as friend functions
  * of Expression. But this doesn't make any considerable changes */
 
-std::unique_ptr<Expression> operator+(const Variable& left, const Variable& right)
+std::shared_ptr<Expression> operator+(const Variable& left, const Variable& right)
 {
-	return std::make_unique<Expression>(std::make_unique<Expression>(left),
-			std::make_unique<Expression>(right), '+');
+	return std::make_shared<Expression>(std::make_shared<Expression>(left),
+			std::make_shared<Expression>(right), '+');
 }
 
-std::unique_ptr<Expression> operator-(const Variable& left, const Variable& right)
+std::shared_ptr<Expression> operator-(const Variable& left, const Variable& right)
 {
-	return std::make_unique<Expression>(std::make_unique<Expression>(left),
-			std::make_unique<Expression>(right), '-');
+	return std::make_shared<Expression>(std::make_shared<Expression>(left),
+			std::make_shared<Expression>(right), '-');
 }
 
-std::unique_ptr<Expression> operator*(const Variable& left, const Variable& right)
+std::shared_ptr<Expression> operator*(const Variable& left, const Variable& right)
 {
-	return std::make_unique<Expression>(std::make_unique<Expression>(left),
-			std::make_unique<Expression>(right), '*');
+	return std::make_shared<Expression>(std::make_shared<Expression>(left),
+			std::make_shared<Expression>(right), '*');
 }
