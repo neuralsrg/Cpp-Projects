@@ -15,19 +15,21 @@ Expression::Expression(std::shared_ptr<Expression> arg1,
 		std::shared_ptr<Expression> arg2, char op)
 {
 	/* Strange situation, IDK whether it's possible or not */
-	assert((arg1->expressionVariable->getName() != "" ||
+	/* assert((arg1->expressionVariable->getName() != "" ||
 			arg2->expressionVariable->getName() != "") &&
-			"Expression cnst somehow got 2 unnamed Variables");
-
-	if ((arg1->expressionVariable->getName() != "")
-			&& (arg2->expressionVariable->getName() != "")
-			&& (arg1->expressionVariable->getName() !=
-				arg2->expressionVariable->getName())) {
-		std::cout << "ERROR: Multiple variable expression!" << std::endl;
-		exit(1);
-	}
-	expressionVariable = arg1->expressionVariable->getName() != "" ?
-		arg1->expressionVariable : arg2->expressionVariable;
+			"Expression cnst somehow got 2 unnamed Variables");*/
+	if (arg2) {
+		if ((arg1->expressionVariable->getName() != "")
+				&& (arg2->expressionVariable->getName() != "")
+				&& (arg1->expressionVariable->getName() !=
+					arg2->expressionVariable->getName())) {
+			std::cout << "ERROR: Multiple variable expression!" << std::endl;
+			exit(1);
+		}
+		expressionVariable = arg1->expressionVariable->getName() != "" ?
+			arg1->expressionVariable : arg2->expressionVariable;
+	} else 
+		expressionVariable = arg1->expressionVariable;
 	left = arg1;
 	right = arg2;
 	operation = op;
@@ -38,9 +40,12 @@ std::ostream& operator<<(std::ostream& cout, const Expression& ex)
 	//if (!ex.left && !ex.right)
 	if (!ex.operation) {
 		cout << *ex.expressionVariable;
-	} else {
-		cout << '(' << *ex.left << ' ' << ex.operation << ' ' << *ex.right << ')';
-	}
+	} else 
+		if (ex.operation == 's' || ex.operation == 'c' ||
+				ex.operation == 'l' || ex.operation == 'e' || ex.operation == 'a')
+			std::cout << ex.operation << '(' << *ex.left << ')';
+		else 
+			cout << '(' << *ex.left << ' ' << ex.operation << ' ' << *ex.right << ')';
 	return cout;
 }
 
@@ -114,17 +119,30 @@ std::shared_ptr<Expression> Expression::deepCopy() const
 {
 	if (!left && !right)
 		return std::make_shared<Expression>(expressionVariable);
-	auto copied_left = left->deepCopy();
-	auto copied_right = right->deepCopy();
-	return std::make_shared<Expression>(copied_left, copied_right, operation); 
+	if (operation == 's' || operation == 'c' || operation == 'l' || operation == 'e'
+			|| operation == 'a') {
+		auto copied_left = left->deepCopy();
+		std::shared_ptr<Expression> copied_right;
+		return std::make_shared<Expression>(copied_left, copied_right, operation); 
+	} else {
+		auto copied_left = left->deepCopy();
+		auto copied_right = right->deepCopy();
+		return std::make_shared<Expression>(copied_left, copied_right, operation); 
+	}
 }
 
 /* Computing Expression like f(y), f(x * x - 2 * x) */
 void Expression::changeDependencies(std::shared_ptr<Expression> newE)
 {
-	/* Looks like impossible, but... */
-	assert(left && right && "changeDependencies got Variable-like Expression!");
 	bool left_named = left->expressionVariable->getName() != "";
+	if (operation == 's' || operation == 'c' || operation == 'l' || operation == 'e'
+			|| operation == 'a') {
+		if (!left->operation && left_named)
+			left = newE;
+		else 
+			left->changeDependencies(newE);
+		return;
+	}
 	bool right_named = right->expressionVariable->getName() != "";
 
 	if (!left->operation && left_named && !right->operation && right_named) {
@@ -166,4 +184,32 @@ std::shared_ptr<Expression> Expression::interceptPropagation(std::shared_ptr<Exp
 std::shared_ptr<Expression> Expression::interceptPropagation(const Variable& var)
 {
 	return interceptPropagation(std::make_shared<Expression>(var));
+}
+
+std::shared_ptr<Expression> sin(std::shared_ptr<Expression> e)
+{
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(e, tmp_right, 's');
+}
+
+std::shared_ptr<Expression> cos(std::shared_ptr<Expression> e)
+{
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(e, tmp_right, 'c');
+}
+
+std::shared_ptr<Expression> log(std::shared_ptr<Expression> e)
+{
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(e, tmp_right, 'l');
+}
+std::shared_ptr<Expression> exp(std::shared_ptr<Expression> e)
+{
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(e, tmp_right, 'e');
+}
+std::shared_ptr<Expression> atan(std::shared_ptr<Expression> e)
+{
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(e, tmp_right, 'a');
 }

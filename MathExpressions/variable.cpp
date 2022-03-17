@@ -33,3 +33,38 @@ std::shared_ptr<Expression> operator*(const Variable& left, const Variable& righ
 	return std::make_shared<Expression>(std::make_shared<Expression>(left),
 			std::make_shared<Expression>(right), '*');
 }
+
+std::shared_ptr<Expression> sin(const Variable& var)
+{
+	auto tmp_left = std::make_shared<Expression>(var);
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(tmp_left, tmp_right, 's');
+}
+
+std::shared_ptr<Expression> cos(const Variable& var)
+{
+	auto tmp_left = std::make_shared<Expression>(var);
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(tmp_left, tmp_right, 'c');
+}
+
+std::shared_ptr<Expression> log(const Variable& var)
+{
+	auto tmp_left = std::make_shared<Expression>(var);
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(tmp_left, tmp_right, 'l');
+}
+
+std::shared_ptr<Expression> exp(const Variable& var)
+{
+	auto tmp_left = std::make_shared<Expression>(var);
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(tmp_left, tmp_right, 'e');
+}
+
+std::shared_ptr<Expression> atan(const Variable& var)
+{
+	auto tmp_left = std::make_shared<Expression>(var);
+	std::shared_ptr<Expression> tmp_right;
+	return std::make_shared<Expression>(tmp_left, tmp_right, 'a');
+}

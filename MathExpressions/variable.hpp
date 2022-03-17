@@ -34,7 +34,12 @@ public:
 	friend std::shared_ptr<Expression> operator+(const Variable&, const Variable&);
 	friend std::shared_ptr<Expression> operator-(const Variable&, const Variable&);
 	friend std::shared_ptr<Expression> operator*(const Variable&, const Variable&);
-
 };
+
+std::shared_ptr<Expression> sin(const Variable&);
+std::shared_ptr<Expression> cos(const Variable&);
+std::shared_ptr<Expression> log(const Variable&);
+std::shared_ptr<Expression> exp(const Variable&);
+std::shared_ptr<Expression> atan(const Variable&);
 
 #endif
