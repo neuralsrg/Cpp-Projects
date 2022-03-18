@@ -70,10 +70,13 @@ public:
 	~Expression() {}
 };
 
+std::ostream& operator<<(std::ostream&, std::shared_ptr<Expression>);
+
 std::shared_ptr<Expression> sin(std::shared_ptr<Expression>);
 std::shared_ptr<Expression> cos(std::shared_ptr<Expression>);
 std::shared_ptr<Expression> log(std::shared_ptr<Expression>);
 std::shared_ptr<Expression> exp(std::shared_ptr<Expression>);
 std::shared_ptr<Expression> atan(std::shared_ptr<Expression>);
 
+double computeExpression(std::shared_ptr<Expression>, double);
 #endif

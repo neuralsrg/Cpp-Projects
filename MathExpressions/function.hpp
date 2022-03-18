@@ -7,14 +7,16 @@
 
 class Function {
 
-	std::shared_ptr<Expression> exp;
+	std::shared_ptr<Expression> exprs;
 
 public:
 
-	Function(std::shared_ptr<Expression> e) : exp(e) {}
+	Function(std::shared_ptr<Expression> e) : exprs(e) {}
 	Function(const Variable&);
 
 	friend std::ostream& operator<<(std::ostream&, const Function&);
+
+	void operator=(std::shared_ptr<Expression>);
 
 	std::shared_ptr<Expression> operator()(std::shared_ptr<Expression>);
 	std::shared_ptr<Expression> operator()(const Variable&);
@@ -25,12 +27,13 @@ public:
 	friend std::shared_ptr<Expression> operator-(const Function&, const Function&);
 	friend std::shared_ptr<Expression> operator*(const Function&, const Function&);
 
+	friend std::shared_ptr<Expression> sin(const Function&);
+	friend std::shared_ptr<Expression> cos(const Function&);
+	friend std::shared_ptr<Expression> log(const Function&);
+	friend std::shared_ptr<Expression> exp(const Function&);
+	friend std::shared_ptr<Expression> atan(const Function&);
+
 };
 
-std::shared_ptr<Expression> sin(const Function&);
-std::shared_ptr<Expression> cos(const Function&);
-std::shared_ptr<Expression> log(const Function&);
-std::shared_ptr<Expression> exp(const Function&);
-std::shared_ptr<Expression> atan(const Function&);
 
 #endif

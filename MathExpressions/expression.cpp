@@ -1,5 +1,6 @@
 #include <cassert>
 #include "expression.hpp"
+#include "math.h"
 
 // #define NDEBUG
 
@@ -42,10 +43,22 @@ std::ostream& operator<<(std::ostream& cout, const Expression& ex)
 		cout << *ex.expressionVariable;
 	} else 
 		if (ex.operation == 's' || ex.operation == 'c' ||
-				ex.operation == 'l' || ex.operation == 'e' || ex.operation == 'a')
-			std::cout << ex.operation << '(' << *ex.left << ')';
+				ex.operation == 'l' || ex.operation == 'e' || ex.operation == 'a') {
+			std::string str = ex.operation == 's' ?
+				"sin" : ex.operation == 'c' ?
+				"cos" : ex.operation == 'l' ?
+				"log" : ex.operation == 'e' ?
+				"exp" : ex.operation == 'a' ? "atan" : "";
+			cout << str << '(' << *ex.left << ')';
+		}
 		else 
 			cout << '(' << *ex.left << ' ' << ex.operation << ' ' << *ex.right << ')';
+	return cout;
+}
+
+std::ostream& operator<<(std::ostream& cout, std::shared_ptr<Expression> e)
+{
+	cout << *e;
 	return cout;
 }
 
@@ -134,38 +147,26 @@ std::shared_ptr<Expression> Expression::deepCopy() const
 /* Computing Expression like f(y), f(x * x - 2 * x) */
 void Expression::changeDependencies(std::shared_ptr<Expression> newE)
 {
+	assert((left || right) && "Variable Expression in changeDependencies");
 	bool left_named = left->expressionVariable->getName() != "";
 	if (operation == 's' || operation == 'c' || operation == 'l' || operation == 'e'
 			|| operation == 'a') {
 		if (!left->operation && left_named)
 			left = newE;
-		else 
+		else if (left->operation) 
 			left->changeDependencies(newE);
 		return;
 	}
 	bool right_named = right->expressionVariable->getName() != "";
 
-	if (!left->operation && left_named && !right->operation && right_named) {
+	if (!left->operation && left_named)
 		left = newE;
-		right = newE;
-		return;
-	}
-	if (!left->operation && left_named) {
-		left = newE;
-		if (right_named)
-			right->changeDependencies(newE);
-		return;
-	}
-	if (!right->operation && right_named) {
-		right = newE;
-		if (left_named)
-			left->changeDependencies(newE);
-		return;
-	}
-	if (left->operation && right->operation) {
+	else if (left->operation)
 		left->changeDependencies(newE);
+	if (!right->operation && right_named)
+		right = newE;
+	else if (right->operation)
 		right->changeDependencies(newE);
-	}
 }
 
 std::shared_ptr<Expression> Expression::interceptPropagation(std::shared_ptr<Expression> e)
@@ -177,6 +178,7 @@ std::shared_ptr<Expression> Expression::interceptPropagation(std::shared_ptr<Exp
 			return std::make_shared<Expression>(expressionVariable);
 	}
 	auto copy = this->deepCopy();	
+	copy->expressionVariable = e->expressionVariable;
 	copy->changeDependencies(e);
 	return copy;
 }
@@ -203,13 +205,40 @@ std::shared_ptr<Expression> log(std::shared_ptr<Expression> e)
 	std::shared_ptr<Expression> tmp_right;
 	return std::make_shared<Expression>(e, tmp_right, 'l');
 }
+
 std::shared_ptr<Expression> exp(std::shared_ptr<Expression> e)
 {
 	std::shared_ptr<Expression> tmp_right;
 	return std::make_shared<Expression>(e, tmp_right, 'e');
 }
+
 std::shared_ptr<Expression> atan(std::shared_ptr<Expression> e)
 {
 	std::shared_ptr<Expression> tmp_right;
 	return std::make_shared<Expression>(e, tmp_right, 'a');
+}
+
+double computeExpression(std::shared_ptr<Expression> e, double x)
+{
+	if (!e->operation && e->expressionVariable->getName() != "")
+		return x;
+	if (!e->operation)
+		return e->expressionVariable->getNumValue();
+	if (e->operation == '+')
+		return computeExpression(e->left, x) + computeExpression(e->right, x);
+	if (e->operation == '-')
+		return computeExpression(e->left, x) - computeExpression(e->right, x);
+	if (e->operation == '*')
+		return computeExpression(e->left, x) * computeExpression(e->right, x);
+	if (e->operation == 's')
+		return std::sin(computeExpression(e->left, x));
+	if (e->operation == 'c')
+		return std::cos(computeExpression(e->left, x));
+	if (e->operation == 'l')
+		return std::log(computeExpression(e->left, x));
+	if (e->operation == 'e')
+		return std::exp(computeExpression(e->left, x));
+	if (e->operation == 'a')
+		return std::atan(computeExpression(e->left, x));
+	return -1; 
 }

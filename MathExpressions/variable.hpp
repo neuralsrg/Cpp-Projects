@@ -29,6 +29,7 @@ public:
 	friend std::ostream& operator<<(std::ostream&, const Variable&);
 	/* Get Variable name */
 	std::string getName() const { return name; }
+	double getNumValue() const { return numValue; }
 
 	/* Overloading operations */
 	friend std::shared_ptr<Expression> operator+(const Variable&, const Variable&);
