@@ -3,15 +3,17 @@
 
 #include <cassert>
 #include <iostream>
+#include <iomanip>
+#include <memory>
  
 // #define NDEBUG
 
 template <typename T>
 class Array {
-	
+
 	T *data;
 	int array_length;
- 
+
 public:
 
 	Array() : data(nullptr), array_length(0) {}
@@ -28,6 +30,17 @@ public:
 	~Array()
 	{
 		delete[] data;
+	}
+
+	friend std::ostream& operator<<(std::ostream& cout, const Array<T> &ar)
+	{
+		for (int i = ar.array_length - 1; i >= 0; --i) {
+			if (i == ar.array_length - 1)
+				cout << std::setw(1) << std::setfill('0') << ar.data[i];
+			else 
+				cout << std::setw(9) << std::setfill('0') << ar.data[i];
+		}
+		return cout;
 	}
 
 	void erase()
@@ -80,6 +93,14 @@ public:
 		array_length = newLength;
 	}
 
+	std::shared_ptr<Array<T>> copy() const 
+	{
+		auto newArray = std::make_shared<Array<T>>(array_length);
+		for (int i = 0; i < array_length; ++i) 
+			newArray->data[i] = data[i];
+		return newArray;
+	}
+
 	void insertBefore(T value, int index)
 	{
 		assert(index >= 0 && index <= array_length && "Incorrect index!");
@@ -124,7 +145,7 @@ public:
 	void insertAtBeginning(T value) { insertBefore(value, 0); }
 	void insertAtEnd(T value) { insertBefore(value, array_length); }
 
-	int getLength() { return array_length; }
+	int getLength() const { return array_length; }
 };
  
  #endif
