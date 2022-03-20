@@ -2,8 +2,12 @@
 #include <cmath>
 #include <math.h>
 
-LongNum::LongNum(double x) : number(std::make_shared<Array<int>>()), power(0)
+//#define NDEBUG
+
+LongNum::LongNum(double x) : number(std::make_shared<Array<int>>()),
+	power(0), sign(x < 0)
 {
+	x = x >= 0 ? x : -1 * x;
 	double frac_part, int_part;
 
 	while ((frac_part = modf(x, &int_part)) > 0) {
@@ -18,7 +22,8 @@ LongNum::LongNum(double x) : number(std::make_shared<Array<int>>()), power(0)
 
 std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 {
-	cout << *ln.number << "E(" << ln.power << ")\n";
+	ln.sign ? cout << '-' << *ln.number << "E(" << ln.power << ")\n" : 
+		cout << *ln.number << "E(" << ln.power << ")\n";
 	return cout;
 }
 	
@@ -26,6 +31,13 @@ std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln, int x)
 {
 	long long part_product = 0;
 	auto newLn = std::make_shared<LongNum>(ln->number->copy(), ln->power);
+
+	if ((!ln->sign && x >= 0) || (ln->sign && x < 0))
+		newLn->sign = 0;
+	else 
+		newLn->sign = 1;
+
+	x = x >= 0 ? x : -1 * x;
 
 	for (int i = 0; i < newLn->number->getLength(); ++i) {
 		part_product = (*newLn->number)[i] * (long long)x + part_product;
@@ -56,6 +68,7 @@ std::shared_ptr<LongNum> reducePower(std::shared_ptr<LongNum> ln, int delta)
 std::shared_ptr<LongNum> addSamePower(std::shared_ptr<LongNum> ln1,
 		std::shared_ptr<LongNum> ln2)
 {
+	assert(!ln1->sign && !ln2->sign && "addSamePower got negative term!");
 	long long sum = 0;
 	if (ln1->number->getLength() > ln2->number->getLength()) {
 		std::shared_ptr<LongNum> tmp_ln = ln1;
@@ -94,9 +107,43 @@ std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum> ln1,
 	auto newLn = reducePower(ln2, power2 - power1);
 	return addSamePower(ln1, newLn);
 }
-/*
-std::shared_ptr<LongNum> operator*(std::unique_ptr<LongNum> ln1, 
-		std::unique_ptr<LongNum> ln2)
+
+std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln1, 
+		std::shared_ptr<LongNum> ln2)
 {
+	bool sign = ln1->sign == ln2->sign ? 0 : 1;
+	auto result = std::make_shared<LongNum>(0);
+	int tmp_power = 0;
 	
-}*/
+	for (int i = 0; i < ln1->number->getLength(); ++i) {
+		auto int_product = ln2 * (*ln1->number)[i];
+		int_product->setPower(int_product->getPower() + tmp_power);
+		std::cout << *int_product << std::endl;
+		result = result + int_product;
+		tmp_power += NUM_SYMBOLS;
+	}
+	result->setSign(sign);
+	return result;
+}
+
+std::shared_ptr<LongNum> operator/(std::shared_ptr<LongNum> ln, int x)
+{
+	auto newLn = std::make_shared<LongNum>(ln->number->copy(), ln->power);
+	if ((!ln->sign && x >= 0) || (ln->sign && x < 0))
+		newLn->sign = 0;
+	else 
+		newLn->sign = 1;
+
+	x = x >= 0 ? x : -1 * x;
+
+	for (int i = ln->number->getLength() - 1; i >= 0; --i) {
+		int ln_term = (*ln->number)[i];
+		(*newLn->number)[i] = ln_term / x;
+		if (i)
+			(*newLn->number)[i - 1] += ln_term % x;
+	}
+	int i = newLn->number->getLength() - 1;
+	if (!(*newLn->number)[i])
+		newLn->number->remove(i);
+	return newLn;
+}
