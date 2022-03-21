@@ -29,6 +29,12 @@ std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 	
 std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln, int x)
 {
+	ln = checkForPrecision(ln);
+	return multiply(ln, x);
+}
+
+std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum> ln, int x)
+{
 	long long part_product = 0;
 	auto newLn = std::make_shared<LongNum>(ln->number->copy(), ln->power);
 
@@ -65,10 +71,28 @@ std::shared_ptr<LongNum> reducePower(std::shared_ptr<LongNum> ln, int delta)
 	return ln;
 }
 
+std::shared_ptr<LongNum> increasePower(std::shared_ptr<LongNum> ln, int delta)
+{
+	for (int i = 0; i < delta / NUM_SYMBOLS; ++i) {
+		ln = ln / CAPACITY;
+		ln->setPower(ln->getPower() + NUM_SYMBOLS);
+	}
+	if (delta % NUM_SYMBOLS > 0) {
+		int mod = delta % NUM_SYMBOLS, k = 1;
+		for (int i = 0; i < mod; ++i)
+			k *= 10;
+		ln = ln / k;
+		ln->setPower(ln->getPower() + mod);
+	}
+	return ln;
+}
+
 std::shared_ptr<LongNum> addSamePower(std::shared_ptr<LongNum> ln1,
 		std::shared_ptr<LongNum> ln2)
 {
 	assert(!ln1->sign && !ln2->sign && "addSamePower got negative term!");
+	assert(!ln1->sign && !ln2->sign && "Negative sign in addSamePower");
+
 	long long sum = 0;
 	if (ln1->number->getLength() > ln2->number->getLength()) {
 		std::shared_ptr<LongNum> tmp_ln = ln1;
@@ -96,21 +120,40 @@ std::shared_ptr<LongNum> addSamePower(std::shared_ptr<LongNum> ln1,
 std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum> ln1, 
 		std::shared_ptr<LongNum> ln2)
 {
+	//ln1 = checkForPrecision(ln1);
+	//ln2 = checkForPrecision(ln2);
 	int power1 = ln1->getPower();
 	int power2 = ln2->getPower();
-	if (power1 == power2)
+
+	if (power1 > power2)
+		ln1 = reducePower(ln1, power1 - power2);
+	else if (power2 > power1)
+		ln2 = reducePower(ln2, power2 - power1);
+	if (!ln1->sign && !ln2->sign)
 		return addSamePower(ln1, ln2);
-	if (power1 > power2) {
-		auto newLn = reducePower(ln1, power1 - power2);
-		return addSamePower(newLn, ln2);
+	if (ln1->sign && ln2->sign) {
+		ln1 = std::make_shared<LongNum>(ln1->number->copy(), ln1->power);
+		ln2 = std::make_shared<LongNum>(ln2->number->copy(), ln2->power);
+		auto newLn = addSamePower(ln1, ln2);
+		newLn->setSign(!newLn->sign);
+		return newLn;
 	}
-	auto newLn = reducePower(ln2, power2 - power1);
-	return addSamePower(ln1, newLn);
+	if (!ln1->sign && ln2->sign) {
+		ln2 = std::make_shared<LongNum>(ln2->number->copy(), ln2->power);
+		return subtractSamePower(ln1, ln2);
+	}
+	ln1 = std::make_shared<LongNum>(ln1->number->copy(), ln1->power);
+	auto newLn = subtractSamePower(ln1, ln2);
+	newLn->setSign(!newLn->sign);
+	return newLn;
 }
 
 std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln1, 
 		std::shared_ptr<LongNum> ln2)
 {
+	ln1 = checkForPrecision(ln1);
+	ln2 = checkForPrecision(ln2);
+
 	bool sign = ln1->sign == ln2->sign ? 0 : 1;
 	auto result = std::make_shared<LongNum>(0);
 	int tmp_power = 0;
@@ -118,7 +161,7 @@ std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln1,
 	for (int i = 0; i < ln1->number->getLength(); ++i) {
 		auto int_product = ln2 * (*ln1->number)[i];
 		int_product->setPower(int_product->getPower() + tmp_power);
-		std::cout << *int_product << std::endl;
+		//std::cout << *int_product << std::endl;
 		result = result + int_product;
 		tmp_power += NUM_SYMBOLS;
 	}
@@ -128,6 +171,8 @@ std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln1,
 
 std::shared_ptr<LongNum> operator/(std::shared_ptr<LongNum> ln, int x)
 {
+	ln = checkForPrecision(ln);
+
 	auto newLn = std::make_shared<LongNum>(ln->number->copy(), ln->power);
 	if ((!ln->sign && x >= 0) || (ln->sign && x < 0))
 		newLn->sign = 0;
@@ -142,8 +187,109 @@ std::shared_ptr<LongNum> operator/(std::shared_ptr<LongNum> ln, int x)
 		if (i)
 			(*newLn->number)[i - 1] += ln_term % x;
 	}
-	int i = newLn->number->getLength() - 1;
-	if (!(*newLn->number)[i])
+	for (int i = newLn->number->getLength() - 1; (*newLn->number)[i] == 0; --i) {
+		if (!i)
+			break;
 		newLn->number->remove(i);
+	}
 	return newLn;
+}
+
+bool operator>(std::shared_ptr<LongNum> ln1, std::shared_ptr<LongNum> ln2)
+{
+	assert((*ln1->number)[ln1->number->getLength() - 1] &&
+			(*ln2->number)[ln2->number->getLength() - 1] &&
+			"operator> got insignificant greatest int!");
+	if (ln1->number->getLength() != ln2->number->getLength())
+		return ln1->number->getLength() > ln2->number->getLength();
+	if (ln1->power > ln2->power)
+		ln1 = reducePower(ln1, ln1->power - ln2->power);
+	else if (ln2->power > ln1->power)
+		ln2 = reducePower(ln2, ln2->power - ln1->power);
+	int i = ln1->number->getLength() - 1;
+	while ((*ln1->number)[i] == (*ln2->number)[i])
+		if (!i)
+			return false;
+		else 
+			--i;
+	return (*ln1->number)[i] > (*ln2->number)[i];
+}
+
+std::shared_ptr<LongNum> subtractSamePower(std::shared_ptr<LongNum> ln1,
+		std::shared_ptr<LongNum> ln2)
+{
+	if (ln2->number->getLength() == 1 && (*ln2->number)[0] == 0)
+		return std::make_shared<LongNum>(ln1->number->copy(), ln1->power);
+	if (!(ln1 > ln2 || ln2 > ln1))
+		return std::make_shared<LongNum>(0);
+	assert((ln1->getPower() == ln2->getPower()) &&
+			"Different power in subtractSamePower");
+	assert(!ln1->sign && !ln2->sign && "Negative sign in subtractSamePower");
+	assert((ln1 > ln2 || ln2 > ln1));
+	if (ln1 > ln2) {
+		auto newLn = std::make_shared<LongNum>(ln1->number->copy(), ln1->power);
+		for (int i = 0; i < ln2->number->getLength(); ++i) {
+			int res = (*newLn->number)[i] - (*ln2->number)[i];
+			if (res < 0) {
+				int j;
+				for (j = i + 1; (*newLn->number)[j] == 0; ++j)
+					(*newLn->number)[j] = CAPACITY - 1;
+				(*newLn->number)[j] -= 1;
+				res += CAPACITY;
+			}
+			(*newLn->number)[i] = res;
+		}
+		for (int i = newLn->number->getLength() - 1; (*newLn->number)[i] == 0; --i)
+			newLn->number->remove(i);
+		return newLn;
+	}
+	auto newLn = subtractSamePower(ln2, ln1);
+	newLn->setSign(1);
+	return newLn;
+}
+
+std::shared_ptr<LongNum> operator-(std::shared_ptr<LongNum> ln1,
+		std::shared_ptr<LongNum> ln2)
+{
+	ln1 = checkForPrecision(ln1);
+	ln2 = checkForPrecision(ln2);
+	/*
+	int power1 = ln1->getPower();
+	int power2 = ln2->getPower();
+	if (power1 > power2)
+		ln1 = reducePower(ln1, power1 - power2);
+	else if (power2 > power1)
+		ln2 = reducePower(ln2, power2 - power1);*/
+	if (!ln1->sign && !ln2->sign)
+		return subtractSamePower(ln1, ln2);
+	if (ln1->sign && ln2->sign) {
+		ln1 = std::make_shared<LongNum>(ln1->number->copy(), ln1->power);
+		ln2 = std::make_shared<LongNum>(ln2->number->copy(), ln2->power);
+		auto newLn = subtractSamePower(ln1, ln2);
+		newLn->setSign(!newLn->sign);
+		return newLn;
+	}
+	if (!ln1->sign && ln2->sign) {
+		ln2 = std::make_shared<LongNum>(ln2->number->copy(), ln2->power);
+		return ln1 + ln2;
+	}
+	ln1 = std::make_shared<LongNum>(ln1->number->copy(), ln1->power);
+	auto newLn = ln1 + ln2;
+	newLn->setSign(1);
+	return newLn;
+}
+
+std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln)
+{
+	int prec = -1 * std::cout.precision();
+	if (ln->getPower() == prec) {
+		std::cout << "1\n";
+		return ln;
+	}
+	if (ln->getPower() > prec) {
+		std::cout << "2\n";
+		return reducePower(ln, ln->getPower() - prec);
+	}
+	std::cout << "3\n";
+	return increasePower(ln, prec - ln->getPower());
 }
