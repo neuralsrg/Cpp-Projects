@@ -58,14 +58,14 @@ std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum> ln, int x)
 std::shared_ptr<LongNum> reducePower(std::shared_ptr<LongNum> ln, int delta)
 {
 	for (int i = 0; i < delta / NUM_SYMBOLS; ++i) {
-		ln = ln * CAPACITY;
+		ln = multiply(ln, CAPACITY); 
 		ln->setPower(ln->getPower() - NUM_SYMBOLS);
 	}
 	if (delta % NUM_SYMBOLS > 0) {
 		int mod = delta % NUM_SYMBOLS, k = 1;
 		for (int i = 0; i < mod; ++i)
 			k *= 10;
-		ln = ln * k;
+		ln = multiply(ln, k); 
 		ln->setPower(ln->getPower() - mod);
 	}
 	return ln;
@@ -74,14 +74,14 @@ std::shared_ptr<LongNum> reducePower(std::shared_ptr<LongNum> ln, int delta)
 std::shared_ptr<LongNum> increasePower(std::shared_ptr<LongNum> ln, int delta)
 {
 	for (int i = 0; i < delta / NUM_SYMBOLS; ++i) {
-		ln = ln / CAPACITY;
+		ln = divide(ln, CAPACITY);
 		ln->setPower(ln->getPower() + NUM_SYMBOLS);
 	}
 	if (delta % NUM_SYMBOLS > 0) {
 		int mod = delta % NUM_SYMBOLS, k = 1;
 		for (int i = 0; i < mod; ++i)
 			k *= 10;
-		ln = ln / k;
+		ln = divide(ln, k);
 		ln->setPower(ln->getPower() + mod);
 	}
 	return ln;
@@ -120,8 +120,14 @@ std::shared_ptr<LongNum> addSamePower(std::shared_ptr<LongNum> ln1,
 std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum> ln1, 
 		std::shared_ptr<LongNum> ln2)
 {
-	//ln1 = checkForPrecision(ln1);
-	//ln2 = checkForPrecision(ln2);
+	ln1 = checkForPrecision(ln1);
+	ln2 = checkForPrecision(ln2);
+	return add(ln1, ln2);
+}
+
+std::shared_ptr<LongNum> add(std::shared_ptr<LongNum> ln1, 
+		std::shared_ptr<LongNum> ln2)
+{
 	int power1 = ln1->getPower();
 	int power2 = ln2->getPower();
 
@@ -153,7 +159,12 @@ std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln1,
 {
 	ln1 = checkForPrecision(ln1);
 	ln2 = checkForPrecision(ln2);
+	return multiply(ln1, ln2);
+}
 
+std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum> ln1, 
+		std::shared_ptr<LongNum> ln2)
+{
 	bool sign = ln1->sign == ln2->sign ? 0 : 1;
 	auto result = std::make_shared<LongNum>(0);
 	int tmp_power = 0;
@@ -172,7 +183,11 @@ std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln1,
 std::shared_ptr<LongNum> operator/(std::shared_ptr<LongNum> ln, int x)
 {
 	ln = checkForPrecision(ln);
+	return divide(ln, x);
+}
 
+std::shared_ptr<LongNum> divide(std::shared_ptr<LongNum> ln, int x)
+{
 	auto newLn = std::make_shared<LongNum>(ln->number->copy(), ln->power);
 	if ((!ln->sign && x >= 0) || (ln->sign && x < 0))
 		newLn->sign = 0;
@@ -253,13 +268,18 @@ std::shared_ptr<LongNum> operator-(std::shared_ptr<LongNum> ln1,
 {
 	ln1 = checkForPrecision(ln1);
 	ln2 = checkForPrecision(ln2);
-	/*
+	return subtract(ln1, ln2);
+}
+
+std::shared_ptr<LongNum> subtract(std::shared_ptr<LongNum> ln1,
+		std::shared_ptr<LongNum> ln2)
+{
 	int power1 = ln1->getPower();
 	int power2 = ln2->getPower();
 	if (power1 > power2)
 		ln1 = reducePower(ln1, power1 - power2);
 	else if (power2 > power1)
-		ln2 = reducePower(ln2, power2 - power1);*/
+		ln2 = reducePower(ln2, power2 - power1);
 	if (!ln1->sign && !ln2->sign)
 		return subtractSamePower(ln1, ln2);
 	if (ln1->sign && ln2->sign) {
@@ -283,13 +303,13 @@ std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln)
 {
 	int prec = -1 * std::cout.precision();
 	if (ln->getPower() == prec) {
-		std::cout << "1\n";
+		//std::cout << "1\n";
 		return ln;
 	}
 	if (ln->getPower() > prec) {
-		std::cout << "2\n";
+		//std::cout << "2\n";
 		return reducePower(ln, ln->getPower() - prec);
 	}
-	std::cout << "3\n";
+	//std::cout << "3\n";
 	return increasePower(ln, prec - ln->getPower());
 }

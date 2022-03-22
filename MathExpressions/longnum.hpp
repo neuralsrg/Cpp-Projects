@@ -4,9 +4,7 @@
 #include <iostream>
 #include <memory>
 #include "array.hpp"
-
-#define CAPACITY 1000000000
-#define NUM_SYMBOLS 9
+#include "constants.hpp"
 
 class LongNum {
 
@@ -36,14 +34,21 @@ public:
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum>, 
 			std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> add(std::shared_ptr<LongNum>, 
+			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum>, 
 			std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum>, 
+			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> operator/(std::shared_ptr<LongNum>, int);
+	friend std::shared_ptr<LongNum> divide(std::shared_ptr<LongNum>, int);
 	friend bool operator>(std::shared_ptr<LongNum>,
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> subtractSamePower(std::shared_ptr<LongNum>,
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> operator-(std::shared_ptr<LongNum>,
+			std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> subtract(std::shared_ptr<LongNum>,
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln);
 

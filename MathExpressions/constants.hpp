@@ -1,0 +1,7 @@
+#ifndef CONSTANTS_HPP_SENTRY
+#define CONSTANTS_HPP_SENTRY
+
+#define CAPACITY 1000000000
+#define NUM_SYMBOLS 9
+
+#endif

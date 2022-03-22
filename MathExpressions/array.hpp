@@ -5,6 +5,7 @@
 #include <iostream>
 #include <iomanip>
 #include <memory>
+#include "constants.hpp"
  
 // #define NDEBUG
 
@@ -41,6 +42,22 @@ public:
 				cout << std::setw(9) << std::setfill('0') << ar.data[i];
 		}
 		return cout;
+	}
+
+	//TODO
+	friend void printFloat(const Array<T> &ar, int precision)
+	{
+		int div = precision / CAPACITY;
+		int mod = precision % CAPACITY;
+		if (!mod) {
+			if (ar.getLength() > div) {
+				for (int i = ar.array_length - 1; i >= 0; --i) {
+					if (i == div - 1)
+						std::cout << '.';
+					std::cout << std::setw(9) << std::setfill('0') << ar.data[i];
+				}
+			}
+		}
 	}
 
 	void erase()
