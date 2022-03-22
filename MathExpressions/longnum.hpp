@@ -52,6 +52,8 @@ public:
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln);
 
+	friend void printFloat(std::shared_ptr<LongNum>, int);
+
 	
 	~LongNum() {}
 };

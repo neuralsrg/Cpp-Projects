@@ -26,6 +26,39 @@ std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 		cout << *ln.number << "E(" << ln.power << ")\n";
 	return cout;
 }
+
+void printFloat(std::shared_ptr<LongNum> ln, int precision)
+{
+	int extra_nodes = std::ceil((double)precision / NUM_SYMBOLS)
+		- ln->number->getLength();
+	extra_nodes = extra_nodes > 0 ? extra_nodes : 0;
+	for (int i = 0; i < extra_nodes; ++i)
+		ln->number->insertAtEnd(0);
+	int i;
+	for (i = ln->number->getLength()- 1;
+			i > std::ceil((double)precision / NUM_SYMBOLS) - 1; i--) {
+		if (i == ln->number->getLength() - 1)
+			std::cout << std::setw(1) << std::setfill('0') << (*ln->number)[i];
+		else 
+			std::cout << std::setw(NUM_SYMBOLS) << std::setfill('0')
+				<< (*ln->number)[i];
+	}
+
+	int middle_precision = precision % NUM_SYMBOLS;
+	int power = 1;
+	for (int j = 0; j < middle_precision; ++j)
+		power *= 10;
+
+	if (i == ln->number->getLength() - 1)
+		std::cout << ((double)(*ln->number)[i] / power);
+	else 
+		std::cout << std::setw(NUM_SYMBOLS + 1) << std::setfill('0')
+			<< (*ln->number)[i];
+
+	for (i--; i > 0; i--)
+		std::cout << std::setw(NUM_SYMBOLS) << std::setfill('0')
+			<< (*ln->number)[i];
+}
 	
 std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln, int x)
 {
