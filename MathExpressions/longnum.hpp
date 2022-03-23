@@ -52,9 +52,13 @@ public:
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln);
 
+	friend bool isZero(std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> sin(std::shared_ptr<LongNum>);
+
 	friend void printFloat(std::shared_ptr<LongNum>);
 
 	
 	~LongNum() {}
 };
+
 #endif

@@ -20,6 +20,7 @@ LongNum::LongNum(double x) : number(std::make_shared<Array<int>>()),
 	} while ((llpart /= CAPACITY) > 0);
 }
 
+/* Old version */
 std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 {
 	ln.sign ? cout << '-' << *ln.number << "E(" << ln.power << ")\n" : 
@@ -29,6 +30,7 @@ std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 
 void printFloat(std::shared_ptr<LongNum> ln)
 {
+	ln = checkForPrecision(ln);
 	int precision = std::cout.precision();
 	int extra_nodes = std::ceil((double)precision / NUM_SYMBOLS)
 		- ln->number->getLength();
@@ -214,12 +216,14 @@ std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum> ln1,
 	
 	for (int i = 0; i < ln1->number->getLength(); ++i) {
 		auto int_product = ln2 * (*ln1->number)[i];
-		int_product->setPower(int_product->getPower() + tmp_power);
+		int_product->setPower(int_product->getPower() + tmp_power + ln1->getPower());
+		//std::cout << "int_product: " << *int_product << std::endl;
 		//std::cout << *int_product << std::endl;
 		result = result + int_product;
 		tmp_power += NUM_SYMBOLS;
 	}
 	result->setSign(sign);
+	//std::cout << "result: " << *result;
 	return result;
 }
 
@@ -355,4 +359,32 @@ std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln)
 	}
 	//std::cout << "3\n";
 	return increasePower(ln, prec - ln->getPower());
+}
+
+bool isZero(std::shared_ptr<LongNum> ln)
+{
+	for (int i = 0; i < ln->number->getLength(); ++i)
+		if ((*ln->number)[i])
+			return false;
+	return  true;
+}
+
+std::shared_ptr<LongNum> sin(std::shared_ptr<LongNum> ln)
+{
+	int counter = 0;
+
+	auto res = std::make_shared<LongNum>(0);
+	auto term = std::make_shared<LongNum>(ln->number->copy(), ln->power);
+
+	ln = checkForPrecision(ln);
+	term = checkForPrecision(term);
+	res = checkForPrecision(res);
+	
+	while (!isZero(term)) {
+		res = res + term;
+		counter++;
+		term = term * ln * ln * (-1) / ((2 * counter) * (2 * counter + 1));
+	}
+
+	return res;
 }
