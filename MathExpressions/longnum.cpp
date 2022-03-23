@@ -27,14 +27,16 @@ std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 	return cout;
 }
 
-void printFloat(std::shared_ptr<LongNum> ln, int precision)
+void printFloat(std::shared_ptr<LongNum> ln)
 {
+	int precision = std::cout.precision();
 	int extra_nodes = std::ceil((double)precision / NUM_SYMBOLS)
 		- ln->number->getLength();
 	extra_nodes = extra_nodes > 0 ? extra_nodes : 0;
 	for (int i = 0; i < extra_nodes; ++i)
 		ln->number->insertAtEnd(0);
-	int i;
+	//std::cout << "new length = " << ln->number->getLength() << '\n';
+	int i = ln->number->getLength()- 1;
 	for (i = ln->number->getLength()- 1;
 			i > std::ceil((double)precision / NUM_SYMBOLS) - 1; i--) {
 		if (i == ln->number->getLength() - 1)
@@ -50,14 +52,22 @@ void printFloat(std::shared_ptr<LongNum> ln, int precision)
 		power *= 10;
 
 	if (i == ln->number->getLength() - 1)
-		std::cout << ((double)(*ln->number)[i] / power);
-	else 
-		std::cout << std::setw(NUM_SYMBOLS + 1) << std::setfill('0')
-			<< (*ln->number)[i];
+		std::cout << (*ln->number)[i] / power << '.' << (*ln->number)[i] % power;
+		//std::cout << ((double)((*ln->number)[i]) / power);
+	else {
+		std::cout << std::setw(NUM_SYMBOLS - middle_precision) << std::setfill('0')
+			<< (*ln->number)[i] / power;
+		std::cout << '.' << (*ln->number)[i] % power;
+	}
 
-	for (i--; i > 0; i--)
+	while (i > 0) {
+		i--;
 		std::cout << std::setw(NUM_SYMBOLS) << std::setfill('0')
 			<< (*ln->number)[i];
+	}
+
+	for (int i = 0; i < extra_nodes; i++)
+		ln->number->remove(ln->number->getLength() - 1 - i);
 }
 	
 std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln, int x)
@@ -229,11 +239,11 @@ std::shared_ptr<LongNum> divide(std::shared_ptr<LongNum> ln, int x)
 
 	x = x >= 0 ? x : -1 * x;
 
-	for (int i = ln->number->getLength() - 1; i >= 0; --i) {
-		int ln_term = (*ln->number)[i];
+	long long ln_term = (*newLn->number)[newLn->number->getLength() - 1];
+	for (int i = newLn->number->getLength() - 1; i >= 0; --i) {
 		(*newLn->number)[i] = ln_term / x;
 		if (i)
-			(*newLn->number)[i - 1] += ln_term % x;
+			ln_term = CAPACITY * (ln_term % x) + (*newLn->number)[i - 1];
 	}
 	for (int i = newLn->number->getLength() - 1; (*newLn->number)[i] == 0; --i) {
 		if (!i)
