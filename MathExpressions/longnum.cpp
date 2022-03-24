@@ -31,7 +31,7 @@ std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 void printFloat(std::shared_ptr<LongNum> ln)
 {
 	ln = checkForPrecision(ln);
-	int precision = std::cout.precision();
+	int precision = -1 * ln->getPower();
 	int extra_nodes = std::ceil((double)precision / NUM_SYMBOLS)
 		- ln->number->getLength();
 	extra_nodes = extra_nodes > 0 ? extra_nodes : 0;
@@ -53,9 +53,13 @@ void printFloat(std::shared_ptr<LongNum> ln)
 	for (int j = 0; j < middle_precision; ++j)
 		power *= 10;
 
-	if (i == ln->number->getLength() - 1)
-		std::cout << (*ln->number)[i] / power << '.' << (*ln->number)[i] % power;
+	if (i == ln->number->getLength() - 1) {
+		std::cout << "This case...\n";
+		std::cout << (*ln->number)[i] / power << '.';
+		std::cout << std::setw(middle_precision) << std::setfill('0')
+			<< (*ln->number)[i] % power;
 		//std::cout << ((double)((*ln->number)[i]) / power);
+	}
 	else {
 		std::cout << std::setw(NUM_SYMBOLS - middle_precision) << std::setfill('0')
 			<< (*ln->number)[i] / power;
