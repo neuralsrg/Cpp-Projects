@@ -37,6 +37,7 @@ public:
 
 	/* Prints the Expression */
 	friend std::ostream& operator<<(std::ostream&, const Expression&);
+	friend std::ostream& operator<<(std::ostream&, std::shared_ptr<Expression>);
 
 	/* Overloading operators */
 	friend std::shared_ptr<Expression> operator+(std::shared_ptr<Expression>,

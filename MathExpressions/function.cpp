@@ -5,9 +5,15 @@ Function::Function(const Variable& var)
 	exprs = std::make_shared<Expression>(var);	
 }
 
+Function::Function(double d)
+{
+	auto var = std::make_shared<Variable>(d);
+	exprs = std::make_shared<Expression>(var);	
+}
+
 std::ostream& operator<<(std::ostream& cout, const Function& f)
 {
-	cout << *f.exprs <<std::endl;
+	cout << *f.exprs << std::endl;
 	return cout;
 }
 

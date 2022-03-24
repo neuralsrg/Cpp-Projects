@@ -24,8 +24,7 @@ Expression::Expression(std::shared_ptr<Expression> arg1,
 				&& (arg2->expressionVariable->getName() != "")
 				&& (arg1->expressionVariable->getName() !=
 					arg2->expressionVariable->getName())) {
-			std::cout << "ERROR: Multiple variable expression!" << std::endl;
-			exit(1);
+			throw "Multiple variable expression!";
 		}
 		expressionVariable = arg1->expressionVariable->getName() != "" ?
 			arg1->expressionVariable : arg2->expressionVariable;

@@ -14,6 +14,7 @@ public:
 
 	Function(std::shared_ptr<Expression> e) : exprs(e) {}
 	Function(const Variable&);
+	Function(double);
 
 	friend std::ostream& operator<<(std::ostream&, const Function&);
 
@@ -35,6 +36,5 @@ public:
 	friend std::shared_ptr<Expression> asin(const Function&);
 
 };
-
 
 #endif

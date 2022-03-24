@@ -20,6 +20,7 @@ public:
 		power(pow), sign(s) {}
 	//friend std::ostream& operator<<(std::ostream&, const LongNum&);
 	friend std::ostream& operator<<(std::ostream&, std::shared_ptr<LongNum>);
+	friend std::ostream& operator<<(std::ostream&, const LongNum&);
 	int getPower() const { return power; }
 	void setPower(int newpow) { power = newpow; }
 	//int getSign() const { return sign; }
@@ -29,12 +30,16 @@ public:
 	friend std::shared_ptr<LongNum> increasePower(std::shared_ptr<LongNum>, int);
 
 	friend std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum>, int);
+	friend std::shared_ptr<LongNum> operator*(double, std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum>, double);
 	friend std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum>, int);
 
 	friend std::shared_ptr<LongNum> addSamePower(std::shared_ptr<LongNum>,
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum>, 
 			std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> operator+(double, std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum>, double);
 	friend std::shared_ptr<LongNum> add(std::shared_ptr<LongNum>, 
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum>, 
@@ -78,6 +83,7 @@ public:
 		}
 		return increasePower(ln, prec - ln->getPower());
 	}
+	void intsToPower(); 
 	
 	~LongNum() {}
 };

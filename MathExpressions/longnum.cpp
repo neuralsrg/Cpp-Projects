@@ -21,18 +21,17 @@ LongNum::LongNum(double x) : number(std::make_shared<Array<int>>()),
 }
 
 /* Old version */
-/*
 std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 {
 	ln.sign ? cout << '-' << *ln.number << "E(" << ln.power << ")\n" : 
 		cout << *ln.number << "E(" << ln.power << ")\n";
 	return cout;
-}*/
+}
 
 std::ostream& operator<<(std::ostream& cout, std::shared_ptr<LongNum> ln)
 {
 	printFloat(ln);
-	std::cout << std::endl;
+	//std::cout << std::endl;
 	return cout;
 }
 
@@ -86,8 +85,23 @@ void printFloat(std::shared_ptr<LongNum> ln)
 	
 std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln, int x)
 {
-	ln = checkForPrecision(ln);
-	return multiply(ln, x);
+	//ln = checkForPrecision(ln);
+	auto res = multiply(ln, x);
+	res->intsToPower();
+	return res;
+	
+}
+
+std::shared_ptr<LongNum> operator*(double x, std::shared_ptr<LongNum> ln)
+{
+	return std::make_shared<LongNum>(x) * ln; 
+	
+}
+
+std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln, double x)
+{
+	return std::make_shared<LongNum>(x) * ln; 
+	
 }
 
 std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum> ln, int x)
@@ -179,7 +193,20 @@ std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum> ln1,
 {
 	ln1 = checkForPrecision(ln1);
 	ln2 = checkForPrecision(ln2);
+	//auto res = add(ln1, ln2);
+	//res->intsToPower();
+	//return res;
 	return add(ln1, ln2);
+}
+
+std::shared_ptr<LongNum> operator+(double x, std::shared_ptr<LongNum> ln)
+{
+	return std::make_shared<LongNum>(x) + ln;
+}
+
+std::shared_ptr<LongNum> operator+(std::shared_ptr<LongNum> ln, double x)
+{
+	return std::make_shared<LongNum>(x) + ln;
 }
 
 std::shared_ptr<LongNum> add(std::shared_ptr<LongNum> ln1, 
@@ -214,9 +241,12 @@ std::shared_ptr<LongNum> add(std::shared_ptr<LongNum> ln1,
 std::shared_ptr<LongNum> operator*(std::shared_ptr<LongNum> ln1, 
 		std::shared_ptr<LongNum> ln2)
 {
-	ln1 = checkForPrecision(ln1);
-	ln2 = checkForPrecision(ln2);
-	return multiply(ln1, ln2);
+	//ln1 = checkForPrecision(ln1);
+	//ln2 = checkForPrecision(ln2);
+	auto res = multiply(ln1, ln2);
+	res->intsToPower();
+	return res;
+	//return multiply(ln1, ln2);
 }
 
 std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum> ln1, 
@@ -235,13 +265,16 @@ std::shared_ptr<LongNum> multiply(std::shared_ptr<LongNum> ln1,
 		tmp_power += NUM_SYMBOLS;
 	}
 	result->setSign(sign);
-	//std::cout << "result: " << *result;
+	
 	return result;
 }
 
 std::shared_ptr<LongNum> operator/(std::shared_ptr<LongNum> ln, int x)
 {
 	ln = checkForPrecision(ln);
+	//auto res = divide(ln, x);
+	//res->intsToPower();
+	//return res;
 	return divide(ln, x);
 }
 
@@ -333,6 +366,9 @@ std::shared_ptr<LongNum> operator-(std::shared_ptr<LongNum> ln1,
 {
 	ln1 = checkForPrecision(ln1);
 	ln2 = checkForPrecision(ln2);
+	//auto res = subtract(ln1, ln2);
+	//res->intsToPower();
+	//return res;
 	return subtract(ln1, ln2);
 }
 
@@ -472,4 +508,12 @@ std::shared_ptr<LongNum> asin(std::shared_ptr<LongNum> ln)
 	}
 
 	return res;
+}
+
+void LongNum::intsToPower()
+{
+	while ((*number)[0] == 0 && number->getLength() > 1) {
+		power += NUM_SYMBOLS;
+		number->remove(0);
+	}
 }
