@@ -2,7 +2,7 @@
 #include "expression.hpp"
 #include "math.h"
 
-// #define NDEBUG
+#define NDEBUG
 
 Expression::Expression(const Variable& var) :
 	expressionVariable(std::make_shared<Variable>(var)),
@@ -15,10 +15,6 @@ Expression::Expression(std::shared_ptr<Variable> var) :
 Expression::Expression(std::shared_ptr<Expression> arg1,
 		std::shared_ptr<Expression> arg2, char op)
 {
-	/* Strange situation, IDK whether it's possible or not */
-	/* assert((arg1->expressionVariable->getName() != "" ||
-			arg2->expressionVariable->getName() != "") &&
-			"Expression cnst somehow got 2 unnamed Variables");*/
 	if (arg2) {
 		if ((arg1->expressionVariable->getName() != "")
 				&& (arg2->expressionVariable->getName() != "")
@@ -37,7 +33,6 @@ Expression::Expression(std::shared_ptr<Expression> arg1,
 
 std::ostream& operator<<(std::ostream& cout, const Expression& ex)
 {
-	//if (!ex.left && !ex.right)
 	if (!ex.operation) {
 		cout << *ex.expressionVariable;
 	} else 

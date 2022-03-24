@@ -1,8 +1,5 @@
 /* Variable class contains the information about Variable object such as: 
- * 		variable name 
- * Overloads functions:
- * 		cout << 
- */
+ * variable name or numeric value in case of nemaless Variable */
 
 #ifndef VARIABLE_HPP_SENTRY
 #define VARIABLE_HPP_SENTRY
@@ -17,7 +14,6 @@ class Expression;
 class Variable {
 	
 	std::string name;
-	//double numValue;
 	std::shared_ptr<LongNum> numValue;
 
 public:

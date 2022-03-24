@@ -1,11 +1,4 @@
-/* Expression class contains the information about Expressions such as:
- * 		variable
- * 			used in expression (in case to prevent multiple
- * 			variable expression)
- * Overloads functions:
- * 		cout
- * 		math functions
- */
+/* Expression class contains the information about the entire Expression */
 
 #ifndef EXPRESSION_HPP_SENTRY
 #define EXPRESSION_HPP_SENTRY

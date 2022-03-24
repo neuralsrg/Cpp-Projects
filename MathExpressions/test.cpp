@@ -41,16 +41,19 @@ int main()
 		h = h + 2.5 * exp (h(u*u)) * cos (sin(h)) * u;
 		std::cout << f(1) + 1 << ' ' << h(0) * 1 << std::endl;
 		std::cout << 1 + f(1) << ' ' << 1 * h(0) << std::endl;
+		std::cout << std::endl;
 
 		Function g = exp(x);
 		f = asin(x);
 		std::cout << "Prints constants pi and e:\n";
 		std::cout << 6*f(0.5) << ' ' << g(1) << std::endl;
+		std::cout << std::endl;
 
 		h = 6 * f(0.5 * g(x) + x * x * g(f(x)));
 		std::cout << "Prints pi with 100 significant digits:\n";
 		std::cout.precision(100);
 		std::cout << h(0) << std::endl;
+		std::cout << std::endl;
 
 		g = f(sin(u));
 		std::cout.precision(17);
@@ -61,6 +64,7 @@ int main()
 		std::cout << foo(0.9576576758) << std::endl;
 		std::cout << std::endl;
 
+		/* Exception will be thrown, the program will terminate */
 		//Function ban = asin(x) + 2*x*x + log(u);
 		
 		Function m = 10 * foo;
@@ -74,10 +78,14 @@ int main()
 
 		/*They take ~10 seconds */
 
-		//std::cout.precision(1002);
-		//std::cout << sum(0) << std::endl;
-		//Function dif = sum - huge;
-		//std::cout << dif(0) << std::endl;
+		std::cout.precision(1002);
+		std::cout << "Wait about 20 sec...\n";
+		std::cout << sum(0) << std::endl;
+
+		Function dif = sum - huge;
+		std::cout.precision(6);
+		std::cout << "And again :(\n";
+		std::cout << dif(0) << std::endl;
 
 		/* YOUR CODE ENDS HERE */
 	}

@@ -14,16 +14,13 @@ class LongNum {
 
 public:
 
-	//LongNum(int num = 0, int pow = 0) : number(1), power(pow) { number[0] = num; }
 	LongNum(double);
 	LongNum(std::shared_ptr<Array<int>> arr, int pow, bool s = 0) : number(arr),
 		power(pow), sign(s) {}
-	//friend std::ostream& operator<<(std::ostream&, const LongNum&);
 	friend std::ostream& operator<<(std::ostream&, std::shared_ptr<LongNum>);
 	friend std::ostream& operator<<(std::ostream&, const LongNum&);
 	int getPower() const { return power; }
 	void setPower(int newpow) { power = newpow; }
-	//int getSign() const { return sign; }
 	void setSign(int s) { sign = s; }
 
 	friend std::shared_ptr<LongNum> reducePower(std::shared_ptr<LongNum>, int);
