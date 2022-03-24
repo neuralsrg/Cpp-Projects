@@ -50,7 +50,6 @@ public:
 			std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> subtract(std::shared_ptr<LongNum>,
 			std::shared_ptr<LongNum>);
-	friend std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln);
 
 	friend bool isZero(std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> sin(std::shared_ptr<LongNum>);
@@ -61,6 +60,23 @@ public:
 
 	friend void printFloat(std::shared_ptr<LongNum>);
 
+	friend std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln,
+			bool print = false)
+	{
+		int prec;
+		if (!print)
+			prec = -1 * (std::cout.precision() + NUM_SYMBOLS);
+		else
+			prec = -1 * (std::cout.precision());
+		if (ln->getPower() == prec) {
+			return std::make_shared<LongNum>(ln->number->copy(), ln->power,
+					ln->sign);
+		}
+		if (ln->getPower() > prec) {
+			return reducePower(ln, ln->getPower() - prec);
+		}
+		return increasePower(ln, prec - ln->getPower());
+	}
 	
 	~LongNum() {}
 };

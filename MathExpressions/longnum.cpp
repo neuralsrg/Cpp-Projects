@@ -30,7 +30,7 @@ std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 
 void printFloat(std::shared_ptr<LongNum> ln)
 {
-	ln = checkForPrecision(ln);
+	ln = checkForPrecision(ln, true);
 	int precision = -1 * ln->getPower();
 	int extra_nodes = std::ceil((double)precision / NUM_SYMBOLS)
 		- ln->number->getLength();
@@ -268,7 +268,7 @@ bool operator>(std::shared_ptr<LongNum> ln1, std::shared_ptr<LongNum> ln2)
 	if (isZero(ln1) && !isZero(ln2))
 		return ln2->sign;
 	if (!isZero(ln1) && isZero(ln2))
-		return !ln2->sign;
+		return !ln1->sign;
 	assert((*ln1->number)[ln1->number->getLength() - 1] &&
 			(*ln2->number)[ln2->number->getLength() - 1] &&
 			"operator> got insignificant greatest int!");
@@ -354,18 +354,6 @@ std::shared_ptr<LongNum> subtract(std::shared_ptr<LongNum> ln1,
 	auto newLn = ln1 + ln2;
 	newLn->setSign(1);
 	return newLn;
-}
-
-std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln)
-{
-	int prec = -1 * std::cout.precision();
-	if (ln->getPower() == prec) {
-		return std::make_shared<LongNum>(ln->number->copy(), ln->power, ln->sign);
-	}
-	if (ln->getPower() > prec) {
-		return reducePower(ln, ln->getPower() - prec);
-	}
-	return increasePower(ln, prec - ln->getPower());
 }
 
 bool isZero(std::shared_ptr<LongNum> ln)
