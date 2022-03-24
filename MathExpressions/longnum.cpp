@@ -432,11 +432,12 @@ std::shared_ptr<LongNum> log(std::shared_ptr<LongNum> ln)
 	auto x = ln - std::make_shared<LongNum>(1);
 	auto term = ln - std::make_shared<LongNum>(1);
 
-	x = checkForPrecision(ln);
+	x = checkForPrecision(x);
 	term = checkForPrecision(term);
 	res = checkForPrecision(res);
 	
 	while (!isZero(term / counter)) {
+		std::cout << *term << '\n';
 		res = res + term / counter;
 		counter++;
 		term = term * x * (-1);
