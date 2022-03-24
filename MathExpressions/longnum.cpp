@@ -39,6 +39,8 @@ void printFloat(std::shared_ptr<LongNum> ln)
 		ln->number->insertAtEnd(0);
 	//std::cout << "new length = " << ln->number->getLength() << '\n';
 	int i = ln->number->getLength()- 1;
+	if (ln->sign)
+		std::cout << '-';
 	for (i = ln->number->getLength()- 1;
 			i > std::ceil((double)precision / NUM_SYMBOLS) - 1; i--) {
 		if (i == ln->number->getLength() - 1)
@@ -54,11 +56,9 @@ void printFloat(std::shared_ptr<LongNum> ln)
 		power *= 10;
 
 	if (i == ln->number->getLength() - 1) {
-		std::cout << "This case...\n";
 		std::cout << (*ln->number)[i] / power << '.';
 		std::cout << std::setw(middle_precision) << std::setfill('0')
 			<< (*ln->number)[i] % power;
-		//std::cout << ((double)((*ln->number)[i]) / power);
 	}
 	else {
 		std::cout << std::setw(NUM_SYMBOLS - middle_precision) << std::setfill('0')
@@ -263,6 +263,12 @@ std::shared_ptr<LongNum> divide(std::shared_ptr<LongNum> ln, int x)
 
 bool operator>(std::shared_ptr<LongNum> ln1, std::shared_ptr<LongNum> ln2)
 {
+	if (isZero(ln1) && isZero(ln2))
+		return false;
+	if (isZero(ln1) && !isZero(ln2))
+		return ln2->sign;
+	if (!isZero(ln1) && isZero(ln2))
+		return !ln2->sign;
 	assert((*ln1->number)[ln1->number->getLength() - 1] &&
 			(*ln2->number)[ln2->number->getLength() - 1] &&
 			"operator> got insignificant greatest int!");
@@ -354,14 +360,11 @@ std::shared_ptr<LongNum> checkForPrecision(std::shared_ptr<LongNum> ln)
 {
 	int prec = -1 * std::cout.precision();
 	if (ln->getPower() == prec) {
-		//std::cout << "1\n";
-		return ln;
+		return std::make_shared<LongNum>(ln->number->copy(), ln->power, ln->sign);
 	}
 	if (ln->getPower() > prec) {
-		//std::cout << "2\n";
 		return reducePower(ln, ln->getPower() - prec);
 	}
-	//std::cout << "3\n";
 	return increasePower(ln, prec - ln->getPower());
 }
 
@@ -378,7 +381,7 @@ std::shared_ptr<LongNum> sin(std::shared_ptr<LongNum> ln)
 	int counter = 0;
 
 	auto res = std::make_shared<LongNum>(0);
-	auto term = std::make_shared<LongNum>(ln->number->copy(), ln->power);
+	auto term = std::make_shared<LongNum>(ln->number->copy(), ln->power, ln->sign);
 
 	ln = checkForPrecision(ln);
 	term = checkForPrecision(term);
@@ -388,6 +391,88 @@ std::shared_ptr<LongNum> sin(std::shared_ptr<LongNum> ln)
 		res = res + term;
 		counter++;
 		term = term * ln * ln * (-1) / ((2 * counter) * (2 * counter + 1));
+	}
+
+	return res;
+}
+
+std::shared_ptr<LongNum> cos(std::shared_ptr<LongNum> ln)
+{
+	int counter = 0;
+
+	auto res = std::make_shared<LongNum>(0);
+	auto term = std::make_shared<LongNum>(1);
+
+	ln = checkForPrecision(ln);
+	term = checkForPrecision(term);
+	res = checkForPrecision(res);
+	
+	while (!isZero(term)) {
+		res = res + term;
+		counter++;
+		term = term * ln * ln * (-1) / ((2 * counter) * (2 * counter - 1));
+	}
+
+	return res;
+}
+
+std::shared_ptr<LongNum> exp(std::shared_ptr<LongNum> ln)
+{
+	int counter = 0;
+
+	auto res = std::make_shared<LongNum>(0);
+	auto term = std::make_shared<LongNum>(1);
+
+	ln = checkForPrecision(ln);
+	term = checkForPrecision(term);
+	res = checkForPrecision(res);
+	
+	while (!isZero(term)) {
+		res = res + term;
+		counter++;
+		term = term * ln / counter;
+	}
+
+	return res;
+}
+
+std::shared_ptr<LongNum> log(std::shared_ptr<LongNum> ln)
+{
+	int counter = 1;
+
+	auto res = std::make_shared<LongNum>(0);
+	auto x = ln - std::make_shared<LongNum>(1);
+	auto term = ln - std::make_shared<LongNum>(1);
+
+	x = checkForPrecision(ln);
+	term = checkForPrecision(term);
+	res = checkForPrecision(res);
+	
+	while (!isZero(term / counter)) {
+		res = res + term / counter;
+		counter++;
+		term = term * x * (-1);
+	}
+
+	return res;
+}
+
+std::shared_ptr<LongNum> asin(std::shared_ptr<LongNum> ln)
+{
+	int counter = 0;
+
+	auto res = std::make_shared<LongNum>(0);
+	auto term = std::make_shared<LongNum>(ln->number->copy(), ln->power, ln->sign);
+
+	ln = checkForPrecision(ln);
+	term = checkForPrecision(term);
+	res = checkForPrecision(res);
+	
+	while (!isZero(term / (2 * counter + 1))) {
+		res = res + term / (2 * counter + 1);
+		counter++;
+		term = term * ln * ln * (2 * counter - 1) /
+			(2 * counter);
 	}
 
 	return res;

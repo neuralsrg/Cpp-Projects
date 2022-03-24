@@ -54,6 +54,10 @@ public:
 
 	friend bool isZero(std::shared_ptr<LongNum>);
 	friend std::shared_ptr<LongNum> sin(std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> cos(std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> exp(std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> log(std::shared_ptr<LongNum>);
+	friend std::shared_ptr<LongNum> asin(std::shared_ptr<LongNum>);
 
 	friend void printFloat(std::shared_ptr<LongNum>);
 
