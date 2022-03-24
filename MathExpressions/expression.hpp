@@ -16,6 +16,7 @@ class Variable;
 #include <memory>
 #include <utility>
 #include "variable.hpp"
+#include "longnum.hpp"
 
 class Expression {
 	
@@ -78,5 +79,6 @@ std::shared_ptr<Expression> log(std::shared_ptr<Expression>);
 std::shared_ptr<Expression> exp(std::shared_ptr<Expression>);
 std::shared_ptr<Expression> atan(std::shared_ptr<Expression>);
 
-double computeExpression(std::shared_ptr<Expression>, double);
+std::shared_ptr<LongNum> computeExpression(std::shared_ptr<Expression>,
+		std::shared_ptr<LongNum>);
 #endif

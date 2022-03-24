@@ -7,7 +7,7 @@ Function::Function(const Variable& var)
 
 std::ostream& operator<<(std::ostream& cout, const Function& f)
 {
-	cout << *f.exprs;
+	cout << *f.exprs <<std::endl;
 	return cout;
 }
 
@@ -31,9 +31,9 @@ std::shared_ptr<Expression> Function::operator()(const Function& f)
 	return exprs->interceptPropagation(f.exprs);
 }
 
-double Function::operator()(double x)
+std::shared_ptr<LongNum> Function::operator()(double x)
 {
-	return computeExpression(exprs, x);
+	return computeExpression(exprs, std::make_shared<LongNum>(x));
 }
 
 std::shared_ptr<Expression> operator+(const Function& f, const Function& g)
@@ -65,7 +65,7 @@ std::shared_ptr<Expression> exp(const Function& f)
 {
 	return std::make_shared<Expression>(f.exprs, std::shared_ptr<Expression>(), 'e');
 }
-std::shared_ptr<Expression> atan(const Function& f)
+std::shared_ptr<Expression> asin(const Function& f)
 {
 	return std::make_shared<Expression>(f.exprs, std::shared_ptr<Expression>(), 'a');
 }

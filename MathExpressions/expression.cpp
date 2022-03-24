@@ -48,7 +48,7 @@ std::ostream& operator<<(std::ostream& cout, const Expression& ex)
 				"sin" : ex.operation == 'c' ?
 				"cos" : ex.operation == 'l' ?
 				"log" : ex.operation == 'e' ?
-				"exp" : ex.operation == 'a' ? "atan" : "";
+				"exp" : ex.operation == 'a' ? "asin" : "";
 			cout << str << '(' << *ex.left << ')';
 		}
 		else 
@@ -218,7 +218,8 @@ std::shared_ptr<Expression> atan(std::shared_ptr<Expression> e)
 	return std::make_shared<Expression>(e, tmp_right, 'a');
 }
 
-double computeExpression(std::shared_ptr<Expression> e, double x)
+std::shared_ptr<LongNum> computeExpression(std::shared_ptr<Expression> e,
+		std::shared_ptr<LongNum> x)
 {
 	if (!e->operation && e->expressionVariable->getName() != "")
 		return x;
@@ -231,14 +232,12 @@ double computeExpression(std::shared_ptr<Expression> e, double x)
 	if (e->operation == '*')
 		return computeExpression(e->left, x) * computeExpression(e->right, x);
 	if (e->operation == 's')
-		return std::sin(computeExpression(e->left, x));
+		return sin(computeExpression(e->left, x));
 	if (e->operation == 'c')
-		return std::cos(computeExpression(e->left, x));
+		return cos(computeExpression(e->left, x));
 	if (e->operation == 'l')
-		return std::log(computeExpression(e->left, x));
+		return log(computeExpression(e->left, x));
 	if (e->operation == 'e')
-		return std::exp(computeExpression(e->left, x));
-	if (e->operation == 'a')
-		return std::atan(computeExpression(e->left, x));
-	return -1; 
+		return exp(computeExpression(e->left, x));
+	return asin(computeExpression(e->left, x));
 }

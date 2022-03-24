@@ -1,15 +1,17 @@
 #include "variable.hpp"
 
-Variable::Variable(std::string variable_name) : name(variable_name), numValue(0) {}
+Variable::Variable(std::string variable_name) : name(variable_name), numValue() {}
 
-Variable::Variable(double value) : name(""), numValue(value) {}
+Variable::Variable(double value) : name(""),
+	numValue(std::make_shared<LongNum>(value)) {}
 
 std::ostream& operator<<(std::ostream& cout, const Variable& var)
 {
 	if (var.name != "")
 		cout << var.name;
 	else
-		cout << var.numValue;
+		printFloat(var.numValue);
+		//cout << var.numValue;
 	return cout;
 }
 
@@ -62,7 +64,7 @@ std::shared_ptr<Expression> exp(const Variable& var)
 	return std::make_shared<Expression>(tmp_left, tmp_right, 'e');
 }
 
-std::shared_ptr<Expression> atan(const Variable& var)
+std::shared_ptr<Expression> asin(const Variable& var)
 {
 	auto tmp_left = std::make_shared<Expression>(var);
 	std::shared_ptr<Expression> tmp_right;

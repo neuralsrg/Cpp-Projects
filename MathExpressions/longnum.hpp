@@ -18,7 +18,8 @@ public:
 	LongNum(double);
 	LongNum(std::shared_ptr<Array<int>> arr, int pow, bool s = 0) : number(arr),
 		power(pow), sign(s) {}
-	friend std::ostream& operator<<(std::ostream&, const LongNum&);
+	//friend std::ostream& operator<<(std::ostream&, const LongNum&);
+	friend std::ostream& operator<<(std::ostream&, std::shared_ptr<LongNum>);
 	int getPower() const { return power; }
 	void setPower(int newpow) { power = newpow; }
 	//int getSign() const { return sign; }

@@ -21,10 +21,18 @@ LongNum::LongNum(double x) : number(std::make_shared<Array<int>>()),
 }
 
 /* Old version */
+/*
 std::ostream& operator<<(std::ostream& cout, const LongNum &ln)
 {
 	ln.sign ? cout << '-' << *ln.number << "E(" << ln.power << ")\n" : 
 		cout << *ln.number << "E(" << ln.power << ")\n";
+	return cout;
+}*/
+
+std::ostream& operator<<(std::ostream& cout, std::shared_ptr<LongNum> ln)
+{
+	printFloat(ln);
+	std::cout << std::endl;
 	return cout;
 }
 
@@ -437,7 +445,6 @@ std::shared_ptr<LongNum> log(std::shared_ptr<LongNum> ln)
 	res = checkForPrecision(res);
 	
 	while (!isZero(term / counter)) {
-		std::cout << *term << '\n';
 		res = res + term / counter;
 		counter++;
 		term = term * x * (-1);

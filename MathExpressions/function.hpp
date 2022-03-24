@@ -4,6 +4,7 @@
 #include <iostream>
 #include "expression.hpp"
 #include "variable.hpp"
+#include "longnum.hpp"
 
 class Function {
 
@@ -21,7 +22,7 @@ public:
 	std::shared_ptr<Expression> operator()(std::shared_ptr<Expression>);
 	std::shared_ptr<Expression> operator()(const Variable&);
 	std::shared_ptr<Expression> operator()(const Function&);
-	double operator()(double);
+	std::shared_ptr<LongNum> operator()(double);
 
 	friend std::shared_ptr<Expression> operator+(const Function&, const Function&);
 	friend std::shared_ptr<Expression> operator-(const Function&, const Function&);
@@ -31,7 +32,7 @@ public:
 	friend std::shared_ptr<Expression> cos(const Function&);
 	friend std::shared_ptr<Expression> log(const Function&);
 	friend std::shared_ptr<Expression> exp(const Function&);
-	friend std::shared_ptr<Expression> atan(const Function&);
+	friend std::shared_ptr<Expression> asin(const Function&);
 
 };
 
