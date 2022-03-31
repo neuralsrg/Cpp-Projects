@@ -1,2 +1,6 @@
-**/.MathExpressions
-.gitignore
+*.o
+*.out
+output
+test.cxx
+**/stolyarov
+FLTK_Classes.cpp
