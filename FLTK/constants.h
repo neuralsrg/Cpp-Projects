@@ -3,6 +3,6 @@
 
 enum obj_types {OBJ_EMPTY, OBJ_BALLOON, OBJ_BUBBLE};
 enum directions {TOP_LEFT, TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT};
-enum moving_states {MOVING_DELETED, MOVING_OK};
+enum moving_states {MOVING_DELETED = -2, MOVING_OK};
 
 #endif
