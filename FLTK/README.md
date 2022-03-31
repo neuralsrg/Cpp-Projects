@@ -1,2 +1,4 @@
 # FLTK
-Creates simple GUI app using FLTK library 
+=========================================
+Creates simple GUI app using FLTK library
+=========================================
