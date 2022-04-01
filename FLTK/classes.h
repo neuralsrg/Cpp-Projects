@@ -38,14 +38,15 @@ protected:
 public:
 
 	int btnParams[4];
-	virtual int getCurrentIndex(int, int) const = 0;
+	virtual int getCurrentIndex(int, int) const { return -1; } // const = 0;
 
 	static void callback_cell(Fl_Widget *w, void *u);
 	static Array<SellInfo> field;
 
 	void fillField(std::shared_ptr<Cell>);
-	virtual void chooseLocation(int, int, std::shared_ptr<Cell>) = 0;
+	virtual void chooseLocation(int, int, std::shared_ptr<Cell>) {} // = 0;
 	static void boomBubblePretenders(int);
+	static void moveObjects(int);
 
 	virtual ~Cell() {}
 };
@@ -61,7 +62,7 @@ public:
 	
 	EmptyCell(int, int, int, int);
 	EmptyCell(int[4]);
-	int getCurrentIndex(int, int) const override { return -1; }
+	virtual int getCurrentIndex(int, int) const override { return -1; }
 	void chooseLocation(int, int, std::shared_ptr<Cell>) override {}
 	virtual ~EmptyCell() {}
 };
@@ -98,7 +99,7 @@ class Scene
 {
 public:
 
-	Array<Cell> cells;
+	//Array<Cell> cells;
 };
 
 #endif
