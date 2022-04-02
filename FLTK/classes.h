@@ -33,20 +33,21 @@ protected:
 	Cell(int, int, int, int, short);
 
 	virtual void click(Fl_Widget *, void *) = 0;
-	void setCallback(Scene *);
 
 public:
+	//Cell(int, int, int, int, short);
 
-	int btnParams[4];
-	virtual int getCurrentIndex(int, int) const { return -1; } // const = 0;
+	void setCallback(Scene *);
+	virtual int getCurrentIndex(int, int) const = 0;
 
 	static void callback_cell(Fl_Widget *w, void *u);
 	static Array<SellInfo> field;
 
 	void fillField(std::shared_ptr<Cell>);
-	virtual void chooseLocation(int, int, std::shared_ptr<Cell>) {} // = 0;
-	static void boomBubblePretenders(int);
+	virtual void chooseLocation(int, int, std::shared_ptr<Cell>)  = 0;
+	static void boomBubblePretenders(int, int = 1);
 	static void moveObjects(int);
+	static void destroyBubblesLeft(int);
 
 	virtual ~Cell() {}
 };
@@ -61,8 +62,8 @@ protected:
 public:
 	
 	EmptyCell(int, int, int, int);
-	EmptyCell(int[4]);
-	virtual int getCurrentIndex(int, int) const override { return -1; }
+	EmptyCell(const std::shared_ptr<Cell> &);
+	int getCurrentIndex(int, int) const override { return -1; }
 	void chooseLocation(int, int, std::shared_ptr<Cell>) override {}
 	virtual ~EmptyCell() {}
 };
@@ -72,7 +73,7 @@ class RoundObj : public Cell
 protected:
 
 	RoundObj(int, int, int, int, short);
-	//RoundObj(int[4], short);
+	RoundObj(const std::shared_ptr<Cell> &);
 	short direction;
 
 public:
@@ -95,11 +96,16 @@ public:
 	virtual ~Bubble() {}
 };
 
-class Scene
+class Scene : public Fl_Window
 {
+	//Fl_Group *sellsCroup;
+
 public:
 
-	//Array<Cell> cells;
+	Array<std::shared_ptr<Cell>> cells;
+	Scene(int);
+	int run() const { return Fl::run(); }
+	~Scene();
 };
 
 #endif

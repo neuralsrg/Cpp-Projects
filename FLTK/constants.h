@@ -1,8 +1,11 @@
 #ifndef CONSTANTS_H_SENTRY
 #define CONSTANTS_H_SENTRY
+#include <FL/Fl.H>
 
 enum obj_types {OBJ_EMPTY, OBJ_BALLOON, OBJ_BUBBLE};
 enum directions {TOP_LEFT, TOP, TOP_RIGHT, RIGHT, BOTTOM_RIGHT, BOTTOM, BOTTOM_LEFT, LEFT};
 enum moving_states {MOVING_DELETED = -2, MOVING_OK};
+enum sizes {S_STRIDE = 20, S_BUTTON_W = 30, S_BUTTON_H = 30};
+enum colors {CLR_WIN_BACKGROUND = FL_GRAY, CLR_BTN_EMPTY = FL_CYAN};
 
 #endif
