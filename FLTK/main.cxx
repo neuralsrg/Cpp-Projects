@@ -3,7 +3,7 @@
 
 int main(int argc, char **argv)
 {
-	Scene *sc = new Scene(1);
+	Scene *sc = new Scene(10);
 	sc->run();
 	delete sc;
 	return 0;

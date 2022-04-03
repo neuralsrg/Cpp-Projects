@@ -7,10 +7,10 @@
 
 /* Cell */
 
-//Array<SellInfo> Cell::field;
+Array<SellInfo> Cell::field;
 
 Cell::Cell(int x, int y, int w, int h, short ot) :
-	Fl_Button(x, y, w, h, ""), objType(ot) {}
+	Fl_Button(x, y, w, h), objType(ot) {}
 
 void Cell::setCallback(Scene *sc)
 {
@@ -27,23 +27,23 @@ void Cell::fillField(std::shared_ptr<Cell> ptr_to_me)
 	field.insertAtEnd(ptr_to_me);
 }
 
-void Cell::boomBubblePretenders(int n, int min_pret)
+void Cell::boomBubblePretenders(int n)
 {
-	for (int sellIndex = 0; sellIndex < field.getLength(); ++sellIndex) {
-		if (field[sellIndex].pretendList.getLength() <= min_pret)
+	for (int cellIndex = 0; cellIndex < field.getLength(); ++cellIndex) {
+		if (field[cellIndex].pretendList.getLength() <= 1)
 			continue;
 		int pretIndex = 0;
-		while (pretIndex < field[sellIndex].pretendList.getLength()) {
-			if (field[sellIndex].pretendList[pretIndex]->objType != OBJ_BUBBLE) {
+		while (pretIndex < field[cellIndex].pretendList.getLength()) {
+			if (field[cellIndex].pretendList[pretIndex]->objType != OBJ_BUBBLE) {
 				++pretIndex;
 				continue;
 			}
 			std::shared_ptr<Cell> bubble =
-				field[sellIndex].pretendList[pretIndex];
-			int bubblesCurrentIndex = bubble->getCurrentIndex(sellIndex, n);
+				field[cellIndex].pretendList[pretIndex];
+			int bubblesCurrentIndex = bubble->getIndex(cellIndex, n, false);
 			field[bubblesCurrentIndex].owner =
 				std::make_shared<EmptyCell>(bubble);
-			field[sellIndex].pretendList.remove(pretIndex);
+			field[cellIndex].pretendList.remove(pretIndex);
 		}
 	}
 }
@@ -59,7 +59,7 @@ void Cell::moveObjects(int n)
 		}
 		std::shared_ptr<Cell> obj =
 			field[cellIndex].pretendList[0];
-		int objCurrentIndex = obj->getCurrentIndex(cellIndex, n);
+		int objCurrentIndex = obj->getIndex(cellIndex, n, false);
 		field[objCurrentIndex].owner =
 			std::make_shared<EmptyCell>(obj);
 		field[cellIndex].owner = obj;
@@ -71,14 +71,99 @@ void Cell::moveObjects(int n)
 void Cell::destroyBubblesLeft(int n)
 {
 	for (int cellIndex = 0; cellIndex < field.getLength(); ++cellIndex) {
-		// TODO Finish this..
+		if (field[cellIndex].owner->objType == OBJ_BUBBLE
+				&& field[cellIndex].pretendList.getLength() > 0) {
+			std::shared_ptr<Cell> bubble =
+				field[cellIndex].owner;
+			int nextLocation = bubble->getIndex(cellIndex, n, true);
+			field[nextLocation].pretendList.erase();
+			field[cellIndex].owner = std::make_shared<EmptyCell>(bubble);
+			if (field[cellIndex].pretendList[0]->objType == OBJ_BUBBLE) {
+				std::shared_ptr<Cell> bubble =
+					field[cellIndex].pretendList[0];
+				int currentLocation = bubble->getIndex(cellIndex, n, false);
+				field[currentLocation].owner = 
+					std::make_shared<EmptyCell>(bubble);
+				field[cellIndex].pretendList.erase();
+			}
+		}
+		else if (field[cellIndex].owner->objType != OBJ_EMPTY &&
+				field[cellIndex].pretendList.getLength() == 1 &&
+				field[cellIndex].pretendList[0]->objType == OBJ_BUBBLE) {
+			std::shared_ptr<Cell> bubble =
+				field[cellIndex].pretendList[0];
+			int currentLocation = bubble->getIndex(cellIndex, n, false);
+			field[cellIndex].pretendList.erase();
+			field[currentLocation].owner = std::make_shared<EmptyCell>(bubble);
+		}
+	}
+}
+
+void Cell::balloonTrials(int n, int trials)
+{
+	for (int trial = 0; trial < trials; ++trial) {
+		for (int cellIndex = 0; cellIndex < n; ++cellIndex) {
+			if ((field[cellIndex].owner->objType == OBJ_BALLOON &&
+					field[cellIndex].pretendList.getLength() > 0) || 
+					(field[cellIndex].owner->objType == OBJ_EMPTY && 
+					field[cellIndex].pretendList.getLength() > 0)) {
+				while (field[cellIndex].pretendList.getLength()) {
+					assert(field[cellIndex].pretendList[0]->objType == OBJ_BALLOON &&
+							"Not Balloons in pretendList");
+					std::shared_ptr<Cell> balloon = field[cellIndex].pretendList[0];
+					int currentLocation = balloon->getIndex(cellIndex, n, false);
+					field[cellIndex].pretendList.remove(0);
+					short curDir = balloon->getDirection();
+					short newDir = curDir == TOP_LEFT ? BOTTOM_RIGHT : 
+								   curDir == TOP ? BOTTOM :
+								   curDir == TOP_RIGHT ? BOTTOM_LEFT : 
+								   curDir == RIGHT ? LEFT : 
+								   curDir == BOTTOM_RIGHT ? TOP_LEFT : 
+								   curDir == BOTTOM ? TOP : 
+								   curDir == BOTTOM_LEFT ? TOP_RIGHT : 
+								   curDir == LEFT ? RIGHT : -1;
+					assert(newDir >= 0 && "Wrong NewDir");
+					balloon->setDirection(newDir);
+					int nextLocation = balloon->getIndex(currentLocation, n, true);
+					field[nextLocation].pretendList.insertAtEnd(balloon);
+				}
+			}
+		}
+		destroyBubblesLeft(n);
+		moveObjects(n);
+	}
+}
+
+void Cell::move(Scene *sc)
+{
+	int n = sc->cells.getLength();
+	for (int cellIndex = 0; cellIndex < n; ++cellIndex)
+		sc->cells[cellIndex]->fillField(sc->cells[cellIndex]);
+	for (int cellIndex = 0; cellIndex < n; ++cellIndex)
+		sc->cells[cellIndex]->chooseLocation(cellIndex, n, sc->cells[cellIndex]);
+	boomBubblePretenders(n);
+	moveObjects(n);
+	destroyBubblesLeft(n);
+	moveObjects(n);
+	balloonTrials(n, 3);
+
+	for (int cellIndex = 0; cellIndex < n; ++cellIndex)
+		sc->cells[cellIndex] = field[cellIndex].owner;
+
+	while (field.getLength()) {
+		field[0].pretendList.erase();
+		field.remove(0);
 	}
 }
 
 /* EmptyCell */
 
 EmptyCell::EmptyCell(int x, int y, int w, int h) :
-	Cell(x, y, w, h, OBJ_EMPTY) { color(CLR_BTN_EMPTY); }
+	Cell(x, y, w, h, OBJ_EMPTY)
+{
+	color(CLR_BTN_EMPTY);
+	color2(CLR2_BTN_EMPTY);
+}
 
 EmptyCell::EmptyCell(const std::shared_ptr<Cell> &c) :
 	Cell(c->x(), c->y(), c->w(), c->h(), OBJ_EMPTY) {}
@@ -97,71 +182,45 @@ void EmptyCell::click(Fl_Widget *w, void *u)
 RoundObj::RoundObj(int x, int y, int w, int h, short obj) :
 	Cell(x, y, w, h, obj), direction(-1) {}
 
-int RoundObj::getCurrentIndex(int newIndex, int n) const
+int RoundObj::getIndex(int index, int n, bool generate) const
 {
-	short row = newIndex / n, column = newIndex % n;
-	switch(direction) {
-		case TOP_LEFT:
-		case LEFT:
-		case BOTTOM_LEFT:
-			++column;
-			break;
-		case TOP_RIGHT:
-		case RIGHT:
-		case BOTTOM_RIGHT:
-			--column;
-			break;
-	}
-	switch(direction) {
-		case TOP_LEFT:
-		case TOP:
-		case TOP_RIGHT:
-			--row;
-			break;
-		case BOTTOM_LEFT:
-		case BOTTOM:
-		case BOTTOM_RIGHT:
-			++row;
-			break;
-	}
-	assert(row >= 0 && column > 0 && "getCurrentIndex computed wrong index!");
-	return row * n + column;
-}
-
-void RoundObj::chooseLocation(int index, int n, std::shared_ptr<Cell> ptr_to_me)
-{
-	direction = std::rand() % 8;
 	short row = index / n, column = index % n;
-
 	switch(direction) {
 		case TOP_LEFT:
 		case LEFT:
 		case BOTTOM_LEFT:
-			--column;
+			column = generate ? column - 1 : column + 1;
 			break;
 		case TOP_RIGHT:
 		case RIGHT:
 		case BOTTOM_RIGHT:
-			++column;
+			column = generate ? column + 1 : column - 1;
 			break;
 	}
 	switch(direction) {
 		case TOP_LEFT:
 		case TOP:
 		case TOP_RIGHT:
-			++row;
+			row = generate ? row + 1 : row - 1;
 			break;
 		case BOTTOM_LEFT:
 		case BOTTOM:
 		case BOTTOM_RIGHT:
-			--row;
+			row = generate ? row - 1 : row + 1;
 			break;
 	}
 	if (column < 0 || column >= n || row < 0 || row >= n) {
 		row = index / n;
 		column = index % n;
 	}
-	int nextLocation = row * n + column;
+	assert(row >= 0 && column >= 0 && "getCurrentIndex computed wrong index!");
+	return row * n + column;
+}
+
+void RoundObj::chooseLocation(int index, int n, std::shared_ptr<Cell> ptr_to_me)
+{
+	direction = std::rand() % 8;
+	int nextLocation = getIndex(index, n, true);
 	if (nextLocation == index)
 		return;
 	assert(nextLocation >= 0 && "Bad location set!");
@@ -179,16 +238,38 @@ void Bubble::click(Fl_Widget *w, void *u)
 	std::cout << "This is Bubble\n";
 }
 
+/* Balloon */
+
+Balloon::Balloon(int x, int y, int w, int h) :
+	RoundObj(x, y, w, h, OBJ_BALLOON) {}
+
+void Balloon::click(Fl_Widget *w, void *u)
+{
+	std::cout << "This is Balloon\n";
+}
+
+/* Controls */
+
+short Controls::getState() const
+{
+	for (int i = 0; i < 4; ++i)
+		if (rb[i]->value())
+			return i;
+	return -1;
+}
+
 /* Scene */
 
-Scene::Scene(int n) : Fl_Window(2 * S_STRIDE + n * S_BUTTON_W,
-		2 * S_STRIDE + n * S_BUTTON_H, "Bubbles & Balloons")//, cells(n * n)
+extern const char* const RB_NAMES[4];
+
+Scene::Scene(int n) :
+	Fl_Window(3 * S_STRIDE + n * S_BUTTON_W + RB_W,
+			2 * S_STRIDE + n * S_BUTTON_H, "Bubbles & Balloons"),
+	Controls(),
+	cells(n * n)
 {
 	begin();
 	color(FL_GRAY);
-	//sellsCroup = new Fl_Group(S_STRIDE, S_STRIDE, n * S_BUTTON_W, n * S_BUTTON_H);
-	//sellsCroup->box(FL_FLAT_BOX);
-	//sellsCroup->color(FL_CYAN);
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
 			cells[i * n + j] = std::make_shared<EmptyCell>(S_STRIDE + j * S_BUTTON_W,
@@ -197,6 +278,17 @@ Scene::Scene(int n) : Fl_Window(2 * S_STRIDE + n * S_BUTTON_W,
 			cells[i * n + j]->setCallback(this);
 		}
 	}
+	int x = 2 * S_STRIDE + n * S_BUTTON_W, y = S_STRIDE; 
+	ctrl_gr = new Fl_Group(x, y, RB_W, n * S_BUTTON_H * 4 / 5);
+	ctrl_gr->color(FL_RED);
+	for (int i = 0; i < 4; ++i) {
+		rb[i] = new Fl_Radio_Round_Button(x, y, RB_W, n * S_BUTTON_H / 5, RB_NAMES[i]);
+		y += n * S_BUTTON_H / 5;
+	}
+	ctrl_gr->end();
+	nextStepBtn = new Fl_Button(x, y, RB_W, n * S_BUTTON_H / 5, "@>>");
+	nextStepBtn->color(FL_GREEN);
+	nextStepBtn->labelfont(FL_BOLD);
 	end();
 	show();
 }
@@ -204,6 +296,5 @@ Scene::Scene(int n) : Fl_Window(2 * S_STRIDE + n * S_BUTTON_W,
 Scene::~Scene()
 {
 	cells.erase();
-	//delete sellsCroup;
 }
 
