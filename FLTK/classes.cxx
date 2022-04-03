@@ -138,9 +138,10 @@ void Cell::move(Scene *sc)
 {
 	int n = sc->cells.getLength();
 	for (int cellIndex = 0; cellIndex < n; ++cellIndex)
-		sc->cells[cellIndex]->fillField(sc->cells[cellIndex]);
+		(*sc->cells[cellIndex])->fillField((*sc->cells[cellIndex]));
 	for (int cellIndex = 0; cellIndex < n; ++cellIndex)
-		sc->cells[cellIndex]->chooseLocation(cellIndex, n, sc->cells[cellIndex]);
+		(*sc->cells[cellIndex])->chooseLocation(cellIndex, n,
+				(*sc->cells[cellIndex]));
 	boomBubblePretenders(n);
 	moveObjects(n);
 	destroyBubblesLeft(n);
@@ -148,7 +149,7 @@ void Cell::move(Scene *sc)
 	balloonTrials(n, 3);
 
 	for (int cellIndex = 0; cellIndex < n; ++cellIndex)
-		sc->cells[cellIndex] = field[cellIndex].owner;
+		(*sc->cells[cellIndex]) = field[cellIndex].owner;
 
 	while (field.getLength()) {
 		field[0].pretendList.erase();
@@ -170,17 +171,36 @@ EmptyCell::EmptyCell(const std::shared_ptr<Cell> &c) :
 
 void EmptyCell::click(Fl_Widget *w, void *u)
 {
-	std::cout << "I'm EmptyCell\n";
+	Scene *su = (Scene *) u;
+	//std::cout << "I'm EmptyCell\n";
 	int index = 0;
-	while (((Scene *)u)->cells[index].get() != w)
+	while ((*su->cells[index]).get() != w)
 		++index;
-	std::cout << index << std::endl;
+	short state = su->getState();
+	switch (state) {
+		case CTRL_CREATE_BUBBLE:
+			(*su->cells[index]) =
+				std::make_shared<Bubble>(*su->cells[index]);
+
+			std::cout << "Summoned Bubble at: " << (*su->cells[index])->x() <<
+				' ' << (*su->cells[index])->y() << std::endl;
+			break;
+		case CTRL_CREATE_BALLOON:
+			(*su->cells[index]) =
+				std::make_shared<Balloon>(*su->cells[index]);
+			std::cout << "Summoned Balloon\n";
+	}
+	su->redraw();
+	//std::cout << index << std::endl;
 }
 
 /* RoundObj */
 
 RoundObj::RoundObj(int x, int y, int w, int h, short obj) :
 	Cell(x, y, w, h, obj), direction(-1) {}
+
+RoundObj::RoundObj(const std::shared_ptr<Cell> &c, short ot) :
+	Cell(c->x(), c->y(), c->w(), c->h(), ot) {}
 
 int RoundObj::getIndex(int index, int n, bool generate) const
 {
@@ -233,6 +253,12 @@ void RoundObj::chooseLocation(int index, int n, std::shared_ptr<Cell> ptr_to_me)
 Bubble::Bubble(int x, int y, int w, int h) :
 	RoundObj(x, y, w, h, OBJ_BUBBLE) {}
 
+Bubble::Bubble(const std::shared_ptr<Cell> &c) :
+	RoundObj(c, OBJ_BUBBLE)
+{
+	color(FL_WHITE);
+}
+
 void Bubble::click(Fl_Widget *w, void *u)
 {
 	std::cout << "This is Bubble\n";
@@ -242,6 +268,12 @@ void Bubble::click(Fl_Widget *w, void *u)
 
 Balloon::Balloon(int x, int y, int w, int h) :
 	RoundObj(x, y, w, h, OBJ_BALLOON) {}
+
+Balloon::Balloon(const std::shared_ptr<Cell> &c) :
+	RoundObj(c, OBJ_BALLOON)
+{
+	color(FL_WHITE);
+}
 
 void Balloon::click(Fl_Widget *w, void *u)
 {
@@ -272,10 +304,12 @@ Scene::Scene(int n) :
 	color(FL_GRAY);
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
-			cells[i * n + j] = std::make_shared<EmptyCell>(S_STRIDE + j * S_BUTTON_W,
-					S_STRIDE + i * S_BUTTON_H, S_BUTTON_W, S_BUTTON_H);
-			cells[i * n + j]->box(FL_FLAT_BOX);
-			cells[i * n + j]->setCallback(this);
+			cells[i * n + j] = new (std::shared_ptr<Cell>)
+				(std::make_shared<EmptyCell>(S_STRIDE + j * S_BUTTON_W,
+											 S_STRIDE + i * S_BUTTON_H,
+											 S_BUTTON_W, S_BUTTON_H));
+			(*cells[i * n + j])->box(FL_FLAT_BOX);
+			(*cells[i * n + j])->setCallback(this);
 		}
 	}
 	int x = 2 * S_STRIDE + n * S_BUTTON_W, y = S_STRIDE; 
@@ -289,12 +323,20 @@ Scene::Scene(int n) :
 	nextStepBtn = new Fl_Button(x, y, RB_W, n * S_BUTTON_H / 5, "@>>");
 	nextStepBtn->color(FL_GREEN);
 	nextStepBtn->labelfont(FL_BOLD);
+	nextStepBtn->callback(nsCallback, this);
 	end();
 	show();
 }
 
+void Scene::nsCallback(Fl_Widget *w, void *u)
+{
+}
+
 Scene::~Scene()
 {
+	for (int i = 0; i < cells.getLength(); ++i) {
+		delete cells[i];
+	}
 	cells.erase();
 }
 

@@ -29,13 +29,14 @@ class Cell : public Fl_Button
 {
 protected:
 
-	short objType;
+	//short objType;
 
 	Cell(int, int, int, int, short);
 
 	virtual void click(Fl_Widget *, void *) = 0;
 
 public:
+	short objType;
 
 	void setCallback(Scene *);
 	virtual int getIndex(int, int, bool) const = 0;
@@ -81,7 +82,7 @@ class RoundObj : public Cell
 protected:
 
 	RoundObj(int, int, int, int, short);
-	RoundObj(const std::shared_ptr<Cell> &);
+	RoundObj(const std::shared_ptr<Cell> &, short);
 	short direction;
 
 public:
@@ -103,6 +104,7 @@ protected:
 public:
 	
 	Bubble(int, int, int, int);
+	Bubble(const std::shared_ptr<Cell> &);
 	virtual ~Bubble() {}
 };
 
@@ -115,6 +117,7 @@ protected:
 public:
 	
 	Balloon(int, int, int, int);
+	Balloon(const std::shared_ptr<Cell> &);
 	virtual ~Balloon() {}
 };
 
@@ -139,9 +142,10 @@ class Scene : public Fl_Window, public Controls
 
 public:
 
-	Array<std::shared_ptr<Cell>> cells;
+	Array<std::shared_ptr<Cell> *> cells;
 
 	Scene(int);
+	static void nsCallback(Fl_Widget *, void *);
 	int run() const { return Fl::run(); }
 	virtual	~Scene();
 };
