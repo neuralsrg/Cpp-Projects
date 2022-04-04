@@ -104,7 +104,7 @@ protected:
 public:
 	
 	Bubble(int, int, int, int);
-	Bubble(const std::shared_ptr<Cell> &);
+	//Bubble(const std::shared_ptr<Cell> &);
 	virtual ~Bubble() {}
 };
 
@@ -117,8 +117,20 @@ protected:
 public:
 	
 	Balloon(int, int, int, int);
-	Balloon(const std::shared_ptr<Cell> &);
+	//Balloon(const std::shared_ptr<Cell> &);
 	virtual ~Balloon() {}
+};
+
+class TripleBtn
+{
+	Array<std::shared_ptr<Cell>> btns;
+
+public:
+
+	TripleBtn(int, int, Scene *);
+	void switchBtn(short);
+	short getVisible();
+	~TripleBtn() { btns.erase(); }
 };
 
 class Controls 
@@ -137,12 +149,11 @@ public:
 
 class Scene : public Fl_Window, public Controls
 {
-	Fl_Group *ctrl_gr;
 	Fl_Button *nextStepBtn;
 
 public:
 
-	Array<std::shared_ptr<Cell> *> cells;
+	Array<std::shared_ptr<TripleBtn>> cells;
 
 	Scene(int);
 	static void nsCallback(Fl_Widget *, void *);

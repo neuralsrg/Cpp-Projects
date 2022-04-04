@@ -190,7 +190,7 @@ void EmptyCell::click(Fl_Widget *w, void *u)
 				std::make_shared<Balloon>(*su->cells[index]);
 			std::cout << "Summoned Balloon\n";
 	}
-	su->redraw();
+	//su->redraw();
 	//std::cout << index << std::endl;
 }
 
@@ -251,14 +251,17 @@ void RoundObj::chooseLocation(int index, int n, std::shared_ptr<Cell> ptr_to_me)
 /* Bubble */
 
 Bubble::Bubble(int x, int y, int w, int h) :
-	RoundObj(x, y, w, h, OBJ_BUBBLE) {}
-
+	RoundObj(x, y, w, h, OBJ_BUBBLE)
+{
+	color(FL_WHITE);
+}
+/*
 Bubble::Bubble(const std::shared_ptr<Cell> &c) :
 	RoundObj(c, OBJ_BUBBLE)
 {
 	color(FL_WHITE);
 }
-
+*/
 void Bubble::click(Fl_Widget *w, void *u)
 {
 	std::cout << "This is Bubble\n";
@@ -267,17 +270,54 @@ void Bubble::click(Fl_Widget *w, void *u)
 /* Balloon */
 
 Balloon::Balloon(int x, int y, int w, int h) :
-	RoundObj(x, y, w, h, OBJ_BALLOON) {}
-
+	RoundObj(x, y, w, h, OBJ_BALLOON)
+{
+	color(FL_GREEN);
+}
+/*
 Balloon::Balloon(const std::shared_ptr<Cell> &c) :
 	RoundObj(c, OBJ_BALLOON)
 {
 	color(FL_WHITE);
 }
-
+*/
 void Balloon::click(Fl_Widget *w, void *u)
 {
 	std::cout << "This is Balloon\n";
+}
+
+/* TripleBtn */
+
+TripleBtn::TripleBtn(int x, int y, Scene *sc) : btns(3)
+{
+	btns[OBJ_EMPTY] = std::make_shared<EmptyCell>(x, y, S_BUTTON_W, S_BUTTON_H);
+	btns[OBJ_BUBBLE] = std::make_shared<Bubble>(x, y, S_BUTTON_W, S_BUTTON_H);
+	btns[OBJ_BALLOON] = std::make_shared<EmptyCell>(x, y, S_BUTTON_W, S_BUTTON_H);
+
+	for (int i = 0; i < btns.getLength(); ++i) {
+		btns[i]->box(FL_FLAT_BOX);
+		btns[i]->setCallback(sc);
+		if (i != OBJ_EMPTY)
+			btns[i]->hide();
+	}
+}
+
+void TripleBtn::switchBtn(short btn)
+{
+	for (int i = 0; i < btns.getLength(); ++i) {
+		btns[i]->hide();
+	}
+	btns[btn]->set_visible();
+}
+
+short TripleBtn::getVisible()
+{
+	for (int i = 0; i < btns.getLength(); ++i) {
+		if (btns[i]->visible_r())
+			return i;
+	}
+	assert(false && "No active button!");
+	return -1;
 }
 
 /* Controls */
@@ -304,22 +344,16 @@ Scene::Scene(int n) :
 	color(FL_GRAY);
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
-			cells[i * n + j] = new (std::shared_ptr<Cell>)
-				(std::make_shared<EmptyCell>(S_STRIDE + j * S_BUTTON_W,
-											 S_STRIDE + i * S_BUTTON_H,
-											 S_BUTTON_W, S_BUTTON_H));
-			(*cells[i * n + j])->box(FL_FLAT_BOX);
-			(*cells[i * n + j])->setCallback(this);
+			cells[i * n + j] = std::make_shared<TripleBtn>(S_STRIDE + j * S_BUTTON_W,
+					S_STRIDE + i * S_BUTTON_H, this);
 		}
 	}
 	int x = 2 * S_STRIDE + n * S_BUTTON_W, y = S_STRIDE; 
-	ctrl_gr = new Fl_Group(x, y, RB_W, n * S_BUTTON_H * 4 / 5);
-	ctrl_gr->color(FL_RED);
 	for (int i = 0; i < 4; ++i) {
-		rb[i] = new Fl_Radio_Round_Button(x, y, RB_W, n * S_BUTTON_H / 5, RB_NAMES[i]);
+		rb[i] = new Fl_Radio_Round_Button(x, y, RB_W, n * S_BUTTON_H / 5,
+				RB_NAMES[i]);
 		y += n * S_BUTTON_H / 5;
 	}
-	ctrl_gr->end();
 	nextStepBtn = new Fl_Button(x, y, RB_W, n * S_BUTTON_H / 5, "@>>");
 	nextStepBtn->color(FL_GREEN);
 	nextStepBtn->labelfont(FL_BOLD);
@@ -328,15 +362,9 @@ Scene::Scene(int n) :
 	show();
 }
 
-void Scene::nsCallback(Fl_Widget *w, void *u)
-{
-}
+void Scene::nsCallback(Fl_Widget *w, void *u) {}
 
 Scene::~Scene()
 {
-	for (int i = 0; i < cells.getLength(); ++i) {
-		delete cells[i];
-	}
 	cells.erase();
 }
-
