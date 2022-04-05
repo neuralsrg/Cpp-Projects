@@ -73,7 +73,7 @@ void Cell::destroyBubblesLeft(int n, Scene *sc)
 				field[cellIndex].pretendList.erase();
 			}
 		} else if (field[cellIndex].pretendList.getLength() != 1)
-			return;
+			continue;
 		if (sc->cells[cellIndex]->getVisible() != OBJ_EMPTY &&
 				sc->cells[field[cellIndex].pretendList[0]]->getVisible()
 				== OBJ_BUBBLE) {
@@ -86,6 +86,7 @@ void Cell::destroyBubblesLeft(int n, Scene *sc)
 void Cell::balloonTrials(int n, Scene *sc, int trials)
 {
 	for (int trial = 0; trial < trials; ++trial) {
+		Array<Array<int>> tmp(n);
 		for (int cellIndex = 0; cellIndex < n; ++cellIndex) {
 			if ((sc->cells[cellIndex]->getVisible() == OBJ_BALLOON &&
 					field[cellIndex].pretendList.getLength() > 0) || 
@@ -104,14 +105,37 @@ void Cell::balloonTrials(int n, Scene *sc, int trials)
 								   curDir == BOTTOM_LEFT ? TOP_RIGHT : 
 								   curDir == LEFT ? RIGHT : -1;
 					assert(newDir >= 0 && "Wrong NewDir");
+					std::cout << "pret = " << pret << std::endl;
+					std::cout << sc->cells[pret]->direction << std::endl;
 					sc->cells[pret]->direction = newDir;
-					int nextLocation = sc->cells[pret]->getIndex(cellIndex, n);
-					field[nextLocation].pretendList.insertAtEnd(cellIndex);
+					std::cout << sc->cells[pret]->direction << std::endl;
+					int nextLocation = sc->cells[pret]->getIndex(pret, n);
+					std::cout << "Balloon from r=" << pret / (int)sqrt(n) <<
+						" c=" << pret % (int)sqrt(n) << " decided to go to r="
+						<< nextLocation / (int)sqrt(n) << " c=" <<
+						nextLocation % (int)sqrt(n)
+						<< std::endl;
+					std::cout << std::endl;
+					if (nextLocation != pret && nextLocation != cellIndex)
+						tmp[nextLocation].insertAtEnd(pret);
 				}
 			}
 		}
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; j < tmp[i].getLength(); ++j)
+				field[i].pretendList.insertAtEnd(tmp[i][j]);
+			tmp[i].erase();
+		}
+		tmp.erase();
 		destroyBubblesLeft(n, sc);
 		moveObjects(n, sc);
+		std::cout << "\nTABLE INFO\n";
+		for (int i = 0; i < field.getLength(); ++i) {
+			std::cout << "[" << i << "]" << " pretends:";
+			for (int j = 0; j < field[i].pretendList.getLength(); ++j)
+				std::cout << field[i].pretendList[j] << ' ';
+			std::cout << std::endl;
+		}
 	}
 }
 
@@ -124,8 +148,23 @@ void Cell::move(Scene *sc)
 	moveObjects(n, sc);
 	destroyBubblesLeft(n, sc);
 	moveObjects(n, sc);
+	std::cout << "\nTABLE INFO BEFORE BALLOON TRIALS\n";
+	for (int i = 0; i < field.getLength(); ++i) {
+		std::cout << "[" << i << "]" << " pretends:";
+		for (int j = 0; j < field[i].pretendList.getLength(); ++j)
+			std::cout << field[i].pretendList[j] << ' ';
+		std::cout << std::endl;
+	}
 	balloonTrials(n, sc, 3);
 
+	std::cout << "\nTABLE INFO\n";
+	for (int i = 0; i < field.getLength(); ++i) {
+		std::cout << "[" << i << "] owns: " << sc->cells[i]->getVisible() << 
+			" pretends:";
+		for (int j = 0; j < field[i].pretendList.getLength(); ++j)
+			std::cout << field[i].pretendList[j] << ' ';
+		std::cout << std::endl;
+	}
 	for (int i = 0; i < field.getLength(); ++i)
 		field[i].pretendList.erase();
 }
@@ -167,6 +206,8 @@ void EmptyCell::click(Fl_Widget *w, void *u)
 		case CTRL_CREATE_BALLOON:
 			su->cells[index]->switchBtn(OBJ_BALLOON);
 			std::cout << "Summoned Balloon\n";
+			Fl::redraw();
+			su->cells[index]->btns[OBJ_BALLOON]->redraw();
 			return;
 		case CTRL_DESTROY_BUBBLE:
 		case CTRL_DESTROY_BALLOON:
@@ -217,6 +258,25 @@ Balloon::Balloon(int x, int y, int w, int h) :
 	RoundObj(x, y, w, h, OBJ_BALLOON)
 {
 	color(CLR_BALLOON);
+	Fl_Shared_Image *img = Fl_Shared_Image::get("./images/balloon.png");
+	if (!img) {
+		return; 
+	}
+	// Resize the image if it's too big, by replacing it with a resized copy:
+	if (img->w() > S_BUTTON_W || img->h() > S_BUTTON_H) {
+		Fl_Image *temp;
+		if (img->w() > img->h()) {
+			temp = img->copy(S_BUTTON_W, S_BUTTON_H * img->h() / img->w());
+		} else {
+			temp = img->copy(S_BUTTON_W * img->w() / img->h(), S_BUTTON_H);
+		}
+		img->release();
+		img = (Fl_Shared_Image *) temp;
+	}
+	//box(FL_FLAT_BOX);
+	image(img);
+	redraw();
+	Fl::redraw();
 }
 
 void Balloon::click(Fl_Widget *w, void *u)
@@ -365,6 +425,12 @@ Scene::Scene(int n) :
 				RB_NAMES[i]);
 		y += n * S_BUTTON_H / 5;
 	}
+
+	Fl_JPEG_Image *img = new Fl_JPEG_Image("balloon.png");
+	if (!img) {
+		return; 
+	}
+
 	nextStepBtn = new Fl_Button(x, y, RB_W, n * S_BUTTON_H / 5, "@>>");
 	nextStepBtn->color(FL_GREEN);
 	nextStepBtn->labelfont(FL_BOLD);
