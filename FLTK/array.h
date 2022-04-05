@@ -61,7 +61,7 @@ public:
 		if (newLength <= 0)
 			return;
 
-		data = new int[newLength];
+		data = new T[newLength];
 		array_length = newLength;
 	}
 
