@@ -105,17 +105,17 @@ void Cell::balloonTrials(int n, Scene *sc, int trials)
 								   curDir == BOTTOM_LEFT ? TOP_RIGHT : 
 								   curDir == LEFT ? RIGHT : -1;
 					assert(newDir >= 0 && "Wrong NewDir");
-					std::cout << "pret = " << pret << std::endl;
-					std::cout << sc->cells[pret]->direction << std::endl;
 					sc->cells[pret]->direction = newDir;
 					std::cout << sc->cells[pret]->direction << std::endl;
 					int nextLocation = sc->cells[pret]->getIndex(pret, n);
+					/*
 					std::cout << "Balloon from r=" << pret / (int)sqrt(n) <<
 						" c=" << pret % (int)sqrt(n) << " decided to go to r="
 						<< nextLocation / (int)sqrt(n) << " c=" <<
 						nextLocation % (int)sqrt(n)
 						<< std::endl;
 					std::cout << std::endl;
+					*/
 					if (nextLocation != pret && nextLocation != cellIndex)
 						tmp[nextLocation].insertAtEnd(pret);
 				}
@@ -129,13 +129,6 @@ void Cell::balloonTrials(int n, Scene *sc, int trials)
 		tmp.erase();
 		destroyBubblesLeft(n, sc);
 		moveObjects(n, sc);
-		std::cout << "\nTABLE INFO\n";
-		for (int i = 0; i < field.getLength(); ++i) {
-			std::cout << "[" << i << "]" << " pretends:";
-			for (int j = 0; j < field[i].pretendList.getLength(); ++j)
-				std::cout << field[i].pretendList[j] << ' ';
-			std::cout << std::endl;
-		}
 	}
 }
 
@@ -148,15 +141,8 @@ void Cell::move(Scene *sc)
 	moveObjects(n, sc);
 	destroyBubblesLeft(n, sc);
 	moveObjects(n, sc);
-	std::cout << "\nTABLE INFO BEFORE BALLOON TRIALS\n";
-	for (int i = 0; i < field.getLength(); ++i) {
-		std::cout << "[" << i << "]" << " pretends:";
-		for (int j = 0; j < field[i].pretendList.getLength(); ++j)
-			std::cout << field[i].pretendList[j] << ' ';
-		std::cout << std::endl;
-	}
 	balloonTrials(n, sc, 3);
-
+	/*
 	std::cout << "\nTABLE INFO\n";
 	for (int i = 0; i < field.getLength(); ++i) {
 		std::cout << "[" << i << "] owns: " << sc->cells[i]->getVisible() << 
@@ -165,15 +151,16 @@ void Cell::move(Scene *sc)
 			std::cout << field[i].pretendList[j] << ' ';
 		std::cout << std::endl;
 	}
+	*/
 	for (int i = 0; i < field.getLength(); ++i)
 		field[i].pretendList.erase();
 }
 
 void winError()
 {
-	Fl_Window *ew = new Fl_Window(100, 100, "Error!");
+	Fl_Window *ew = new Fl_Window(200, 200, "Error!");
 	ew->begin();
-	Fl_Box *b = new Fl_Box(0, 0, 100, 100, "Error!");
+	Fl_Box *b = new Fl_Box(0, 0, 200, 200);
 	b->labelfont(FL_BOLD);
 	ew->end();
 	ew->show();
@@ -194,18 +181,18 @@ void EmptyCell::click(Fl_Widget *w, void *u)
 	int index = 0;
 	while (su->cells[index]->btns[OBJ_EMPTY].get() != w)
 		++index;
-	std::cout << "clicked on EmptyCell at index " << index << std::endl;
+	//std::cout << "clicked on EmptyCell at index " << index << std::endl;
 	short state = su->getState();
 	switch (state) {
 		case -1:
 			return;
 		case CTRL_CREATE_BUBBLE:
 			su->cells[index]->switchBtn(OBJ_BUBBLE);
-			std::cout << "Summoned Bubble\n";
+			//std::cout << "Summoned Bubble\n";
 			return;
 		case CTRL_CREATE_BALLOON:
 			su->cells[index]->switchBtn(OBJ_BALLOON);
-			std::cout << "Summoned Balloon\n";
+			//std::cout << "Summoned Balloon\n";
 			Fl::redraw();
 			su->cells[index]->btns[OBJ_BALLOON]->redraw();
 			return;
@@ -227,7 +214,13 @@ RoundObj::RoundObj(int x, int y, int w, int h, short obj) :
 Bubble::Bubble(int x, int y, int w, int h) :
 	RoundObj(x, y, w, h, OBJ_BUBBLE)
 {
-	color(CLR_BUBBLE);
+	//color(CLR_BUBBLE);
+	Fl_JPEG_Image *img = new Fl_JPEG_Image("./images/bubble30.jpg");
+	if (!img) {
+		return; 
+	}
+	image(img);
+	//Fl::redraw();
 }
 
 void Bubble::click(Fl_Widget *w, void *u)
@@ -257,12 +250,13 @@ void Bubble::click(Fl_Widget *w, void *u)
 Balloon::Balloon(int x, int y, int w, int h) :
 	RoundObj(x, y, w, h, OBJ_BALLOON)
 {
-	color(CLR_BALLOON);
-	Fl_Shared_Image *img = Fl_Shared_Image::get("./images/balloon.png");
+	//color(CLR_BALLOON);
+	Fl_JPEG_Image *img = new Fl_JPEG_Image("./images/balloon30.jpg");
 	if (!img) {
 		return; 
 	}
 	// Resize the image if it's too big, by replacing it with a resized copy:
+	/*
 	if (img->w() > S_BUTTON_W || img->h() > S_BUTTON_H) {
 		Fl_Image *temp;
 		if (img->w() > img->h()) {
@@ -273,10 +267,9 @@ Balloon::Balloon(int x, int y, int w, int h) :
 		img->release();
 		img = (Fl_Shared_Image *) temp;
 	}
+	*/
 	//box(FL_FLAT_BOX);
 	image(img);
-	redraw();
-	Fl::redraw();
 }
 
 void Balloon::click(Fl_Widget *w, void *u)
@@ -346,8 +339,8 @@ int TripleBtn::getIndex(int index, int n) const
 			--row;
 			break;
 	}
-	std::cout << "getIndex : new row = " << row << " new column = " << column
-		<< std::endl;
+	//std::cout << "getIndex : new row = " << row << " new column = " << column
+	//	<< std::endl;
 	if (column < 0 || column >= n || row < 0 || row >= n) {
 		row = index / n;
 		column = index % n;
@@ -362,12 +355,12 @@ void TripleBtn::chooseLocation(int index, int n)
 		return;
 	direction = std::rand() % 8;
 	int nextLocation = getIndex(index, n);
-	std::cout << "nextLocation = " << nextLocation << std::endl;
+	//std::cout << "nextLocation = " << nextLocation << std::endl;
 	if (nextLocation == index)
 		return;
 	assert(nextLocation >= 0 && "Bad location set!");
 	Cell::field[nextLocation].pretendList.insertAtEnd(index);
-	std::cout << "New pretend attached to " << nextLocation << std::endl;
+	//std::cout << "New pretend attached to " << nextLocation << std::endl;
 }
 
 void TripleBtn::switchBtn(short btn)
@@ -410,8 +403,11 @@ Scene::Scene(int n) :
 	cells(n * n)
 {
 	Cell::field.reallocate(n * n);
-	std::cout << "Field length : " << Cell::field.getLength() << std::endl;
 	begin();
+
+	Fl_JPEG_Image *img = new Fl_JPEG_Image("./images/logo.jpg");
+	icon(img);
+
 	color(FL_GRAY);
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
@@ -425,12 +421,8 @@ Scene::Scene(int n) :
 				RB_NAMES[i]);
 		y += n * S_BUTTON_H / 5;
 	}
-
-	Fl_JPEG_Image *img = new Fl_JPEG_Image("balloon.png");
-	if (!img) {
-		return; 
-	}
-
+	/*
+	*/
 	nextStepBtn = new Fl_Button(x, y, RB_W, n * S_BUTTON_H / 5, "@>>");
 	nextStepBtn->color(FL_GREEN);
 	nextStepBtn->labelfont(FL_BOLD);

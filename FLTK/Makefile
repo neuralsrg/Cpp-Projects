@@ -27,7 +27,7 @@ main.o: main.cxx classes.cxx classes.h constants.h array.h # a C++ file
 
 # Now define how to link the final app - let's assume it needs image and OpenGL support
 output: main.o classes.o
-	$(CXX) -o $@ main.o classes.o $(LINKFLTK) #$(LINKFLTK_IMG) $(LINKFLTK_GL)
+	$(CXX) -o $@ main.o classes.o $(LINKFLTK) $(LINKFLTK_IMG) #$(LINKFLTK_GL)
 	$(STRIP) $@
 	$(POSTBUILD) $@  # only required on OSX, but call it anyway for portability
 
