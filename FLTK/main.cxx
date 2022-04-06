@@ -3,8 +3,20 @@
 
 int main(int argc, char **argv)
 {
-	std::srand(438);
-	Scene *sc = new Scene(8);
+	int seed, n;
+	float scale;
+
+	std::cout << "Enter seed:" << std::endl;
+	std::cin >> seed;
+	std::srand(seed);
+
+	std::cout << "Enter cells number:" << std::endl;
+	std::cin >> n;
+
+	std::cout << "Enter scaling param:" << std::endl;
+	std::cin >> scale;
+
+	Scene *sc = new Scene(n, scale);
 	sc->run();
 	delete sc;
 	return 0;

@@ -1,7 +1,7 @@
 #include "classes.h"
 #include <cassert>
 
-// #define NDEBUG
+#define NDEBUG
 
 /* Definitions of Classes functions */
 
@@ -106,16 +106,7 @@ void Cell::balloonTrials(int n, Scene *sc, int trials)
 								   curDir == LEFT ? RIGHT : -1;
 					assert(newDir >= 0 && "Wrong NewDir");
 					sc->cells[pret]->direction = newDir;
-					std::cout << sc->cells[pret]->direction << std::endl;
 					int nextLocation = sc->cells[pret]->getIndex(pret, n);
-					/*
-					std::cout << "Balloon from r=" << pret / (int)sqrt(n) <<
-						" c=" << pret % (int)sqrt(n) << " decided to go to r="
-						<< nextLocation / (int)sqrt(n) << " c=" <<
-						nextLocation % (int)sqrt(n)
-						<< std::endl;
-					std::cout << std::endl;
-					*/
 					if (nextLocation != pret && nextLocation != cellIndex)
 						tmp[nextLocation].insertAtEnd(pret);
 				}
@@ -142,16 +133,6 @@ void Cell::move(Scene *sc)
 	destroyBubblesLeft(n, sc);
 	moveObjects(n, sc);
 	balloonTrials(n, sc, 3);
-	/*
-	std::cout << "\nTABLE INFO\n";
-	for (int i = 0; i < field.getLength(); ++i) {
-		std::cout << "[" << i << "] owns: " << sc->cells[i]->getVisible() << 
-			" pretends:";
-		for (int j = 0; j < field[i].pretendList.getLength(); ++j)
-			std::cout << field[i].pretendList[j] << ' ';
-		std::cout << std::endl;
-	}
-	*/
 	for (int i = 0; i < field.getLength(); ++i)
 		field[i].pretendList.erase();
 }
@@ -161,6 +142,7 @@ void winError()
 	Fl_Window *ew = new Fl_Window(200, 200, "Error!");
 	ew->begin();
 	Fl_Box *b = new Fl_Box(0, 0, 200, 200);
+	b->label("Error!");
 	b->labelfont(FL_BOLD);
 	ew->end();
 	ew->show();
@@ -181,18 +163,15 @@ void EmptyCell::click(Fl_Widget *w, void *u)
 	int index = 0;
 	while (su->cells[index]->btns[OBJ_EMPTY].get() != w)
 		++index;
-	//std::cout << "clicked on EmptyCell at index " << index << std::endl;
 	short state = su->getState();
 	switch (state) {
 		case -1:
 			return;
 		case CTRL_CREATE_BUBBLE:
 			su->cells[index]->switchBtn(OBJ_BUBBLE);
-			//std::cout << "Summoned Bubble\n";
 			return;
 		case CTRL_CREATE_BALLOON:
 			su->cells[index]->switchBtn(OBJ_BALLOON);
-			//std::cout << "Summoned Balloon\n";
 			Fl::redraw();
 			su->cells[index]->btns[OBJ_BALLOON]->redraw();
 			return;
@@ -209,18 +188,34 @@ void EmptyCell::click(Fl_Widget *w, void *u)
 RoundObj::RoundObj(int x, int y, int w, int h, short obj) :
 	Cell(x, y, w, h, obj) {}
 
+Fl_JPEG_Image* RoundObj::resizeObj(Fl_JPEG_Image *img, int button_w, int button_h)
+{
+	if (img->w() > button_w || img->h() > button_h) {
+		Fl_Image *temp;
+		if (img->w() > img->h()) {
+			temp = img->copy(button_w, button_h * img->h() / img->w());
+		} else {
+			temp = img->copy(button_w * img->w() / img->h(), button_h);
+		}
+		delete img;
+		img = (Fl_JPEG_Image *) temp;
+	}
+	return img;
+}	
+
 /* Bubble */
 
 Bubble::Bubble(int x, int y, int w, int h) :
 	RoundObj(x, y, w, h, OBJ_BUBBLE)
 {
-	//color(CLR_BUBBLE);
-	Fl_JPEG_Image *img = new Fl_JPEG_Image("./images/bubble30.jpg");
+	Fl_JPEG_Image *img = new Fl_JPEG_Image("./images/bubble.jpg");
 	if (!img) {
 		return; 
 	}
+	img = RoundObj::resizeObj(img, w, h);
+	box(FL_FLAT_BOX);
+	color(CLR_BTN_EMPTY);
 	image(img);
-	//Fl::redraw();
 }
 
 void Bubble::click(Fl_Widget *w, void *u)
@@ -250,25 +245,13 @@ void Bubble::click(Fl_Widget *w, void *u)
 Balloon::Balloon(int x, int y, int w, int h) :
 	RoundObj(x, y, w, h, OBJ_BALLOON)
 {
-	//color(CLR_BALLOON);
-	Fl_JPEG_Image *img = new Fl_JPEG_Image("./images/balloon30.jpg");
+	Fl_JPEG_Image *img = new Fl_JPEG_Image("./images/balloon.jpg");
 	if (!img) {
 		return; 
 	}
-	// Resize the image if it's too big, by replacing it with a resized copy:
-	/*
-	if (img->w() > S_BUTTON_W || img->h() > S_BUTTON_H) {
-		Fl_Image *temp;
-		if (img->w() > img->h()) {
-			temp = img->copy(S_BUTTON_W, S_BUTTON_H * img->h() / img->w());
-		} else {
-			temp = img->copy(S_BUTTON_W * img->w() / img->h(), S_BUTTON_H);
-		}
-		img->release();
-		img = (Fl_Shared_Image *) temp;
-	}
-	*/
-	//box(FL_FLAT_BOX);
+	img = RoundObj::resizeObj(img, w, h);
+	box(FL_FLAT_BOX);
+	color(CLR_BTN_EMPTY);
 	image(img);
 }
 
@@ -296,11 +279,11 @@ void Balloon::click(Fl_Widget *w, void *u)
 
 /* TripleBtn */
 
-TripleBtn::TripleBtn(int x, int y, Scene *sc) : btns(3)
+TripleBtn::TripleBtn(int x, int y, float k, Scene *sc) : btns(3)
 {
-	btns[OBJ_EMPTY] = std::make_shared<EmptyCell>(x, y, S_BUTTON_W, S_BUTTON_H);
-	btns[OBJ_BUBBLE] = std::make_shared<Bubble>(x, y, S_BUTTON_W, S_BUTTON_H);
-	btns[OBJ_BALLOON] = std::make_shared<Balloon>(x, y, S_BUTTON_W, S_BUTTON_H);
+	btns[OBJ_EMPTY] = std::make_shared<EmptyCell>(x, y, k * S_BUTTON_W, k * S_BUTTON_H);
+	btns[OBJ_BUBBLE] = std::make_shared<Bubble>(x, y, k * S_BUTTON_W, k * S_BUTTON_H);
+	btns[OBJ_BALLOON] = std::make_shared<Balloon>(x, y, k * S_BUTTON_W, k * S_BUTTON_H);
 
 	for (int i = 0; i < btns.getLength(); ++i) {
 		btns[i]->box(FL_FLAT_BOX);
@@ -312,7 +295,6 @@ TripleBtn::TripleBtn(int x, int y, Scene *sc) : btns(3)
 
 int TripleBtn::getIndex(int index, int n) const
 {
-	//std::cout << "getIndex : index = " << index << " n = " << n << std::endl;
 	n = (int)sqrt(n);
 	short row = index / n, column = index % n;
 	switch(direction) {
@@ -339,8 +321,6 @@ int TripleBtn::getIndex(int index, int n) const
 			--row;
 			break;
 	}
-	//std::cout << "getIndex : new row = " << row << " new column = " << column
-	//	<< std::endl;
 	if (column < 0 || column >= n || row < 0 || row >= n) {
 		row = index / n;
 		column = index % n;
@@ -355,12 +335,10 @@ void TripleBtn::chooseLocation(int index, int n)
 		return;
 	direction = std::rand() % 8;
 	int nextLocation = getIndex(index, n);
-	//std::cout << "nextLocation = " << nextLocation << std::endl;
 	if (nextLocation == index)
 		return;
 	assert(nextLocation >= 0 && "Bad location set!");
 	Cell::field[nextLocation].pretendList.insertAtEnd(index);
-	//std::cout << "New pretend attached to " << nextLocation << std::endl;
 }
 
 void TripleBtn::switchBtn(short btn)
@@ -369,7 +347,6 @@ void TripleBtn::switchBtn(short btn)
 		btns[i]->hide();
 	}
 	btns[btn]->set_visible();
-	//std::cout << "Switched to " << btn << std::endl;
 }
 
 short TripleBtn::getVisible()
@@ -396,9 +373,9 @@ short Controls::getState() const
 
 extern const char* const RB_NAMES[4];
 
-Scene::Scene(int n) :
-	Fl_Window(3 * S_STRIDE + n * S_BUTTON_W + RB_W,
-			2 * S_STRIDE + n * S_BUTTON_H, "Bubbles & Balloons"),
+Scene::Scene(int n, float k) :
+	Fl_Window(3 * S_STRIDE + k * n * S_BUTTON_W + k * RB_W,
+			2 * S_STRIDE + k * n * S_BUTTON_H, "Bubbles & Balloons"),
 	Controls(),
 	cells(n * n)
 {
@@ -411,19 +388,19 @@ Scene::Scene(int n) :
 	color(FL_GRAY);
 	for (int i = 0; i < n; ++i) {
 		for (int j = 0; j < n; ++j) {
-			cells[i * n + j] = std::make_shared<TripleBtn>(S_STRIDE + j * S_BUTTON_W,
-					S_STRIDE + i * S_BUTTON_H, this);
+			cells[i * n + j] = std::make_shared<TripleBtn>(S_STRIDE + k * j * S_BUTTON_W,
+					S_STRIDE + k * i * S_BUTTON_H, k, this);
 		}
 	}
-	int x = 2 * S_STRIDE + n * S_BUTTON_W, y = S_STRIDE; 
+	int x = 2 * S_STRIDE + k * n * S_BUTTON_W, y = S_STRIDE; 
 	for (int i = 0; i < 4; ++i) {
-		rb[i] = new Fl_Radio_Round_Button(x, y, RB_W, n * S_BUTTON_H / 5,
+		rb[i] = new Fl_Radio_Round_Button(x, y, k * RB_W, k * n * S_BUTTON_H / 5,
 				RB_NAMES[i]);
-		y += n * S_BUTTON_H / 5;
+		rb[i]->labelsize(rb[i]->labelsize() * k);
+		y += k * n * S_BUTTON_H / 5;
 	}
-	/*
-	*/
-	nextStepBtn = new Fl_Button(x, y, RB_W, n * S_BUTTON_H / 5, "@>>");
+	nextStepBtn = new Fl_Button(x, y, k * RB_W, k * n * S_BUTTON_H / 5, "@>>");
+	nextStepBtn->labelsize(nextStepBtn->labelsize() * k);
 	nextStepBtn->color(FL_GREEN);
 	nextStepBtn->labelfont(FL_BOLD);
 	nextStepBtn->callback(nsCallback, this);

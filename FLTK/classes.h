@@ -11,7 +11,7 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Radio_Round_Button.H>
 #include <FL/Fl_JPEG_Image.H>
-#include <FL/Fl_Shared_Image.H>
+//#include <FL/Fl_Shared_Image.H>
 
 class Cell;
 class RoundObj;
@@ -75,6 +75,7 @@ protected:
 
 public:
 
+	static Fl_JPEG_Image* resizeObj(Fl_JPEG_Image *, int, int);
 	virtual ~RoundObj() {}
 };
 
@@ -109,7 +110,7 @@ public:
 	Array<std::shared_ptr<Cell>> btns;
 	short direction;
 
-	TripleBtn(int, int, Scene *);
+	TripleBtn(int, int, float, Scene *);
 
 	int getIndex(int, int) const;
 	void chooseLocation(int, int);
@@ -141,7 +142,7 @@ public:
 
 	Array<std::shared_ptr<TripleBtn>> cells;
 
-	Scene(int);
+	Scene(int, float);
 	static void nsCallback(Fl_Widget *, void *);
 	int run() const { return Fl::run(); }
 	virtual	~Scene();
