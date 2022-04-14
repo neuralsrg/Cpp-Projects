@@ -2,5 +2,9 @@
 #define CONSTANTS_H_SENTRY
 
 enum sizes {FIELD = 190};
+enum time {DELAY = 50}; // 50 ms delay
+enum cow {COW_STAYING, COW_LEFT, COW_RIGHT, COW_EATING};
+enum creeper {CREEPER_STAYING, CREEPER_LEFT, CREEPER_RIGHT, CREEPER_BLOW};
+enum tree {TREE_CALM, TREE_LEFT, TREE_RIGHT};
 
 #endif
