@@ -17,7 +17,7 @@ protected:
 	virtual void moveSubObj() noexcept = 0;
 public:
 	virtual void move() noexcept = 0;
-	//virtual void drawLine1(std::string &, std::vector<short> &, short) noexcept = 0;
+	virtual void drawLine(std::string &, std::vector<short> &, short) noexcept = 0;
 };
 
 class interface::ISubObj
@@ -25,8 +25,8 @@ class interface::ISubObj
 public:
 	virtual void mirror() noexcept = 0;
 	virtual void act(short) noexcept = 0;
-	//virtual void drawLine2(std::string &, std::vector<short> &,
-	//		short, short) noexcept = 0;
+	virtual void drawLine(std::string &, std::vector<short> &,
+			short, short) noexcept = 0;
 };
 
 #endif

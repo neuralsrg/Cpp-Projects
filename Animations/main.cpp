@@ -16,6 +16,7 @@ int main()
 		std::system("clear");
 	}
 	*/
+	std::srand(28);
 	scene::Scene sc(1);
 	sc.run(10000);
 }

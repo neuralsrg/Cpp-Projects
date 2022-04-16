@@ -23,7 +23,8 @@ protected:
 		x(x), y(y), symb(symb), color(color), content(len) {}
 
 public:
-	virtual void drawLine2(std::string &, std::vector<short> &, short, short) noexcept;
+	virtual void drawLine(std::string &, std::vector<short> &,
+			short, short) noexcept override = 0;
 };
 
 class classes::Object : public interface::IObject
@@ -39,7 +40,8 @@ protected:
 		x(x), y(y), subObjects(len), action(-1), priority(p), timeBeforeNewAction(0)
 	{}
 public:
-	virtual void drawLine1(std::string &, std::vector<short> &, short) noexcept;
+	virtual void drawLine(std::string &, std::vector<short> &,
+			short) noexcept override = 0;
 };
 
 #endif

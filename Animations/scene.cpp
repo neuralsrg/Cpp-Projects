@@ -7,7 +7,7 @@ extern const char* const constants::colors[4];
 
 scene::Scene::Scene(int trees) : objects(trees)
 {
-	objects[0] = std::make_shared<tree::Tree>(40, 60);
+	objects[0] = std::make_shared<tree::Tree>(40, 10);
 }
 
 void scene::Scene::run(short ms)
@@ -19,13 +19,15 @@ void scene::Scene::run(short ms)
 	// time cycle 
 	while (ms > 0) {
 		fullStr.clear();
+		for (auto it = objects.begin(); it != objects.end(); it++)
+			(*it)->move();
+
 		for (int i = 0; i < constants::HEIGHT; ++i) {
 			std::string line = emptyLine;
 			std::vector<short> clrs = emptyCls;
-			for (auto it = objects.begin(); it != objects.end(); it++) {
-				(*it)->move();
-				(*it)->drawLine1(line, clrs, i);
-			}
+			for (auto it = objects.begin(); it != objects.end(); it++)
+				(*it)->drawLine(line, clrs, i);
+
 			short curColor = clrs[0];
 			fullStr += constants::colors[curColor];
 			for (int i = 0; i < constants::WIDTH; ++i) {

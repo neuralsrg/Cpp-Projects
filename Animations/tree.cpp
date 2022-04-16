@@ -11,7 +11,8 @@ tree::Stem::Stem() : SubObj(9, 0, '&', constants::CLR_GRAY, 5)
 	content[0] = {2, 3};
 	content[1] = content[0];
 	content[2] = {2, 3, 4};
-	content[3] = {1, 2, 3, 6};
+	content[3] = {2, 3, 5, 6};
+	content[4] = {1, 2, 3, 6};
 }
 
 tree::Foliage::Foliage() : SubObj(0, 5, '+', constants::CLR_GREEN, 5)
@@ -30,19 +31,20 @@ tree::Foliage::Foliage() : SubObj(0, 5, '+', constants::CLR_GREEN, 5)
 void tree::Foliage::act(short state) noexcept
 {
 	auto inc {
-		[](short n) { return n + 1; }
+		[](short &n) { ++n; }
 	};
 	auto inc2 {
-		[](short n) { return n + 2; }
+		[](short &n) { n += 2; }
 	};
 
 	auto dec {
-		[](short n) { return n - 1; }
+		[](short &n) { --n; }
 	};
 	auto dec2 {
-		[](short n) { return n - 2; }
+		[](short &n) { n -= 2; }
 	};
 
+	//std::cout << "Called act() with state = " << state << std::endl;
 	switch(state) {
 		case constants::TREE_CALM:
 			return;
@@ -93,8 +95,10 @@ void tree::Tree::moveSubObj() noexcept
 		timeBeforeNewAction = constants::TREE_DELAY;
 		chooseAction();
 	}
-	for (int i = 0; i < (int)subObjects.size(); ++i)
+	for (int i = 0; i < (int)subObjects.size(); ++i) {
+		std::cout << "Want them to act like " << action << std::endl;
 		subObjects[i]->act(action);
+	}
 	timeBeforeNewAction -= constants::DELAY;
 }
 

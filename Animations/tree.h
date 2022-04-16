@@ -17,9 +17,9 @@ public:
 
 	void mirror() noexcept override {}
 	void act(short) noexcept override {}
-	virtual void drawLine2(std::string &s, std::vector<short> &clrs,
+	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
-	{ classes::SubObj::drawLine2(s, clrs, l, dx); }
+	{ classes::SubObj::drawLine(s, clrs, l, dx); }
 };
 
 class tree::Foliage : public classes::SubObj
@@ -29,9 +29,9 @@ public:
 
 	void mirror() noexcept override {}
 	void act(short) noexcept override;
-	virtual void drawLine2(std::string &s, std::vector<short> &clrs,
+	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
-	{ classes::SubObj::drawLine2(s, clrs, l, dx); }
+	{ classes::SubObj::drawLine(s, clrs, l, dx); }
 };
 
 class tree::Tree : public classes::Object
@@ -43,9 +43,9 @@ public:
 	Tree(short, short);
 
 	void move() noexcept override;
-	virtual void drawLine1(std::string &s, std::vector<short> &clrs,
+	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l) noexcept override
-	{ classes::Object::drawLine1(s, clrs, l); }
+	{ classes::Object::drawLine(s, clrs, l); }
 };
 
 #endif
