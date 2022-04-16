@@ -7,9 +7,24 @@
 
 namespace classes
 {
-	class Object;
 	class SubObj;
+	class Object;
 }
+
+class classes::SubObj : public interface::ISubObj
+{
+protected:
+	short x, y;
+	char symb;
+	short color;
+	std::vector<std::vector<short>> content;
+
+	SubObj(short x, short y, char symb, short color, short len) :
+		x(x), y(y), symb(symb), color(color), content(len) {}
+
+public:
+	virtual void drawLine2(std::string &, std::vector<short> &, short, short) noexcept;
+};
 
 class classes::Object : public interface::IObject
 {
@@ -18,21 +33,13 @@ protected:
 	std::vector<std::shared_ptr<classes::SubObj>> subObjects;
 	short action;
 	short priority;
+	int timeBeforeNewAction;
 
-	Object(short x, short y, short len, short action) :
-		x(x), y(y), subObjects(len), action(action), priority(-1) {}
-};
-
-class classes::SubObj : public interface::ISubObj
-{
-protected:
-	short x, y;
-	char symb;
-	std::string color;
-	std::vector<std::vector<short>> content;
-
-	SubObj(short x, short y, char symb, std::string color, short len) :
-		x(x), y(y), symb(symb), color(color), content(len) {}
+	Object(short x, short y, short len, short p = -1) :
+		x(x), y(y), subObjects(len), action(-1), priority(p), timeBeforeNewAction(0)
+	{}
+public:
+	virtual void drawLine1(std::string &, std::vector<short> &, short) noexcept;
 };
 
 #endif

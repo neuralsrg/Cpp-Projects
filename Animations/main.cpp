@@ -2,6 +2,8 @@
 #include <chrono>
 #include <thread>
 #include "progressbar.h"
+#include "scene.h"
+#include "tree.h"
 
 int main()
 {
@@ -14,12 +16,6 @@ int main()
 		std::system("clear");
 	}
 	*/
-	std::string red = "\033[31m";
-	std::string reset = "\033[0m";
-	std::string message1 = "Hello ";
-	std::string message2 = "World ";
-	std::string message3 = "!aa";
-	std::string message4 = "   bbbb";
-	std::string res = message1 + red + message2 + reset + message3 + message4;
-	std::cout << res << std::endl;
+	scene::Scene sc(1);
+	sc.run(10000);
 }

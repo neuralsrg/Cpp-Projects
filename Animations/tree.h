@@ -1,5 +1,5 @@
-#ifndef PARTS_H_SENTRY 
-#define PARTS_H_SENTRY
+#ifndef TREE_H_SENTRY 
+#define TREE_H_SENTRY
 
 #include "classes.h"
 
@@ -16,7 +16,10 @@ public:
 	Stem();
 
 	void mirror() noexcept override {}
-	void act() noexcept override {}
+	void act(short) noexcept override {}
+	virtual void drawLine2(std::string &s, std::vector<short> &clrs,
+			short l, short dx) noexcept override
+	{ classes::SubObj::drawLine2(s, clrs, l, dx); }
 };
 
 class tree::Foliage : public classes::SubObj
@@ -25,7 +28,10 @@ public:
 	Foliage();
 
 	void mirror() noexcept override {}
-	void act() noexcept override;
+	void act(short) noexcept override;
+	virtual void drawLine2(std::string &s, std::vector<short> &clrs,
+			short l, short dx) noexcept override
+	{ classes::SubObj::drawLine2(s, clrs, l, dx); }
 };
 
 class tree::Tree : public classes::Object
@@ -34,8 +40,12 @@ protected:
 	void chooseAction() noexcept override;
 	void moveSubObj() noexcept override;
 public:
+	Tree(short, short);
+
 	void move() noexcept override;
-	void draw(std::string *) noexcept override;
+	virtual void drawLine1(std::string &s, std::vector<short> &clrs,
+			short l) noexcept override
+	{ classes::Object::drawLine1(s, clrs, l); }
 };
 
 #endif
