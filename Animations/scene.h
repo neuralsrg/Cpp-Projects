@@ -1,8 +1,9 @@
 #ifndef SCENE_H_SENTRY
 #define SCENE_H_SENTRY
 
-#include "tree.h"
 #include "classes.h"
+#include "tree.h"
+#include "cow.h"
 #include <iostream>
 #include <memory>
 #include <vector>

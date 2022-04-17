@@ -96,7 +96,6 @@ void tree::Tree::moveSubObj() noexcept
 		chooseAction();
 	}
 	for (int i = 0; i < (int)subObjects.size(); ++i) {
-		std::cout << "Want them to act like " << action << std::endl;
 		subObjects[i]->act(action);
 	}
 	timeBeforeNewAction -= constants::DELAY;

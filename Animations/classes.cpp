@@ -7,10 +7,11 @@ void classes::SubObj::drawLine(std::string &s,
 	dx += x;
 	if (l < 0 || l > (short)content.size())
 		return;
-	for (auto it = content[l - 1].begin(); it != content[l - 1].end(); it++) {
-		s[dx + *it] = symb;
-		clrs[dx + *it] = color;
-	}
+	if (!content[l - 1].empty())
+		for (auto it = content[l - 1].begin(); it != content[l - 1].end(); it++) {
+			s[dx + *it] = symb;
+			clrs[dx + *it] = color;
+		}
 }
 
 void classes::Object::drawLine(std::string &s,

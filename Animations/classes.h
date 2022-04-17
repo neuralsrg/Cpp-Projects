@@ -33,13 +33,13 @@ protected:
 	short x, y;
 	std::vector<std::shared_ptr<classes::SubObj>> subObjects;
 	short action;
-	short priority;
 	int timeBeforeNewAction;
 
 	Object(short x, short y, short len, short p = -1) :
-		x(x), y(y), subObjects(len), action(-1), priority(p), timeBeforeNewAction(0)
+		x(x), y(y), subObjects(len), action(-1), timeBeforeNewAction(0), priority(p)
 	{}
 public:
+	short priority;
 	virtual void drawLine(std::string &, std::vector<short> &,
 			short) noexcept override = 0;
 };
