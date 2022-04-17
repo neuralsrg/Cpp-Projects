@@ -9,9 +9,9 @@ namespace constants
 	const char* const colors[4] = {"\033[0m", "\033[31m", "\033[32m", "\033[90m"};
 
 	enum tree {TREE_CALM, TREE_LEFT, TREE_RIGHT, TREE_DELAY = 3 * DELAY};
-
 	enum cow {COW_STAYING, COW_WALKING, COW_EATING, COW_DELAY = 6 * DELAY};
-	enum creeper {CREEPER_STAYING, CREEPER_LEFT, CREEPER_RIGHT, CREEPER_BLOW};
+	enum creeper {CREEPER_STAYING, CREEPER_LEFT, CREEPER_RIGHT, CREEPER_BLINK,
+		CREEPER_BLOW};
 }
 
 #endif
