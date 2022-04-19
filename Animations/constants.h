@@ -3,7 +3,7 @@
 
 namespace constants
 {
-	enum sizes {WIDTH = 170, HEIGHT = 45};
+	enum sizes {WIDTH = 170, HEIGHT = 40};
 	enum time {DELAY = 500}; // 50 ms delay
 	enum color_inds {CLR_RESET, CLR_RED, CLR_GREEN, CLR_GRAY};
 	const char* const colors[4] = {"\033[0m", "\033[31m", "\033[32m", "\033[90m"};

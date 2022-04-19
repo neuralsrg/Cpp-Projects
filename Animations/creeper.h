@@ -19,7 +19,6 @@ class creeper::Body : public classes::SubObj
 public:
 	Body();
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -32,8 +31,6 @@ class creeper::Shape : public classes::SubObj
 public:
 	Shape();
 
-	//TODO Delete all mirrors!
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -46,7 +43,6 @@ class creeper::Face : public classes::SubObj
 public:
 	Face();
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -59,7 +55,6 @@ class creeper::Paw : public classes::SubObj
 public:
 	Paw(short);
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -72,8 +67,6 @@ class creeper::Blow : public classes::SubObj
 public:
 	Blow();
 
-	//TODO Delete all mirrors!
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -92,7 +85,6 @@ public:
 	void move() noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l) noexcept override;
-	//{ classes::Object::drawLine(s, clrs, l); }
 	virtual ~Creeper() {}
 };
 

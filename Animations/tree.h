@@ -15,7 +15,6 @@ class tree::Stem : public classes::SubObj
 public:
 	Stem();
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override {}
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -28,7 +27,6 @@ class tree::Foliage : public classes::SubObj
 public:
 	Foliage();
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override

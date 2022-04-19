@@ -2,6 +2,7 @@
 #define PROGRESSBAR_H_SENTRY
 
 #include "colors.h"
+#include "constants.h"
 
 namespace pb
 {
@@ -11,7 +12,7 @@ namespace pb
 class pb::ProgressBar {
 	
     float progress = 0.0;
-    int barWidth = 70;
+    int barWidth = constants::WIDTH - 6;
     float minValue = 0;
     float maxValue = 1;
     float currentValue = 0;

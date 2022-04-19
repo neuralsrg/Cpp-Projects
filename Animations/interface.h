@@ -23,7 +23,6 @@ public:
 class interface::ISubObj
 {
 public:
-	virtual void mirror() noexcept = 0;
 	virtual void act(short) noexcept = 0;
 	virtual void drawLine(std::string &, std::vector<short> &,
 			short, short) noexcept = 0;

@@ -7,18 +7,11 @@
 
 int main(int argc, const char *argv[])
 {
-	/*
-	pb::ProgressBar pbar(1, 100);
-	for (int i = 1; i < 100; ++i) {
-		pbar.print();
-		std::this_thread::sleep_for(std::chrono::milliseconds(100));
-		pbar.update(i);
-		std::system("clear");
-	}
-	*/
-	std::srand(89); //32
-	if (argc != 5)
+	if (argc < 5) {
+		std::cout << "Please, enter number of: trees, cows, creepers, time, and seed (optional)" << std::endl;
 		exit(1);
+	}
+	std::srand(argc == 6 ? atoi(argv[5]) : 89);
 	scene::Scene sc(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]));
 	sc.run(atoi(argv[4]));
 }

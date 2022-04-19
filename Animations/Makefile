@@ -9,7 +9,7 @@ main.o: main.cpp constants.h
 scene.o: scene.h scene.cpp constants.h interface.h classes.h
 	g++ -g -Wall -c scene.cpp 
 
-progressbar.o: progressbar.cpp constants.h
+progressbar.o: progressbar.h progressbar.cpp constants.h
 	g++ -g -Wall -c progressbar.cpp 
 
 tree.o: tree.h tree.cpp constants.h interface.h classes.h

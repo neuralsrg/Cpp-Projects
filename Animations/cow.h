@@ -19,8 +19,6 @@ class cow::Head : public classes::SubObj
 public:
 	Head();
 
-	//TODO Delete all mirrors!
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -33,7 +31,6 @@ class cow::Body : public classes::SubObj
 public:
 	Body();
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override {}
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -46,7 +43,6 @@ class cow::Paw : public classes::SubObj
 public:
 	Paw(short);
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -59,7 +55,6 @@ class cow::Tail : public classes::SubObj
 public:
 	Tail();
 
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -72,8 +67,6 @@ class cow::Tongue : public classes::SubObj
 public:
 	Tongue();
 
-	//TODO Delete all mirrors!
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
@@ -86,8 +79,6 @@ class cow::Grass : public classes::SubObj
 public:
 	Grass();
 
-	//TODO Delete all mirrors!
-	void mirror() noexcept override {}
 	void act(short) noexcept override;
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override

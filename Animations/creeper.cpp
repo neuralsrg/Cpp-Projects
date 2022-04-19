@@ -46,7 +46,11 @@ creeper::Shape::Shape() : SubObj(0, 1, '@', constants::CLR_GRAY, 16)
 	content[11] = {0, 1, 27, 28};
 	content[12] = {0, 1, 27, 28};
 	content[13] = {0, 1, 27, 28};
-	content[14] = {2, 3, 4, 24, 25, 26}; content[15].resize(21); std::iota(content[15].begin(), content[15].end(), 4); } 
+	content[14] = {2, 3, 4, 24, 25, 26};
+	content[15].resize(21);
+	std::iota(content[15].begin(), content[15].end(), 4);
+}
+
 void creeper::Shape::act(short action) noexcept
 {
 	if (action == constants::CREEPER_BLOW) {
@@ -155,28 +159,6 @@ creeper::Creeper::Creeper(short x, short y) : Object(x, y, 6, y)
 
 void creeper::Creeper::chooseAction() noexcept
 {
-	/*
-	if (action == -1) {
-		action = 0;
-		return;
-	}
-	if (action == 0) {
-		action = 1;
-		return;
-	}
-	if (action == 1) {
-		action = 2;
-		return;
-	}
-	if (action == 2) {
-		action = 3;
-		return;
-	}
-	if (action == 3) {
-		action = 4;
-		return;
-	}
-	*/
 	if (action == constants::CREEPER_DEAD)
 		return;
 	if (action == constants::CREEPER_BLINK) {

@@ -5,6 +5,7 @@
 #include "tree.h"
 #include "cow.h"
 #include "creeper.h"
+#include "progressbar.h"
 #include <iostream>
 #include <memory>
 #include <vector>

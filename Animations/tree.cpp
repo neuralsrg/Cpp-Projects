@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <numeric>
 
 extern const char* const constants::colors[4];
 
@@ -17,8 +18,9 @@ tree::Stem::Stem() : SubObj(9, 0, '&', constants::CLR_GRAY, 5)
 
 tree::Foliage::Foliage() : SubObj(0, 5, '+', constants::CLR_GREEN, 5)
 {
-	// Is there a better way to do that? Avoiding iteration...
-	content[0] = {2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22};
+	//content[0] = {2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22};
+	content[0].resize(21);
+	std::iota(content[0].begin(), content[0].end(), 2);
 	content[1] = content[0];
 	content[2].assign(content[0].begin() + 1, content[0].end() - 1);
 	content[3].assign(content[0].begin() + 5, content[0].end() - 5);

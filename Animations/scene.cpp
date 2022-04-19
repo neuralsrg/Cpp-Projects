@@ -32,6 +32,8 @@ void scene::Scene::run(int ms)
 		{ return o1->priority <= o2->priority; }
 	};
 
+	pb::ProgressBar pbar(1, ms / constants::DELAY);
+	float progress = 0;
 	std::string fullStr;
 	std::string emptyLine(constants::WIDTH, ' ');
 	std::vector<short> emptyCls(constants::WIDTH, constants::CLR_RESET);
@@ -39,13 +41,14 @@ void scene::Scene::run(int ms)
 	// time cycle 
 	while (ms > 0) {
 		fullStr.clear();
+		pbar.update(progress++);
+
 		for (auto it = objects.begin(); it != objects.end(); it++)
 			(*it)->move();
 
 		std::sort(objects.begin(), objects.end(), srt);
 
 		for (int i = 0; i < constants::HEIGHT; ++i) {
-			//std::cout << "Entered i= " << i << std::endl;
 			std::string line = emptyLine;
 			std::vector<short> clrs = emptyCls;
 			for (auto it = objects.begin(); it != objects.end(); it++)
@@ -64,11 +67,11 @@ void scene::Scene::run(int ms)
 			}
 			fullStr += constants::colors[constants::CLR_RESET];
 			fullStr += "|\n";
-			//std::cout << "Exited i= " << i << std::endl;
 		}
 
 		std::this_thread::sleep_for(std::chrono::milliseconds(constants::DELAY));
 		std::system("clear");
+		pbar.print();
 		std::cout << fullStr;
 		ms -= constants::DELAY;
 	}

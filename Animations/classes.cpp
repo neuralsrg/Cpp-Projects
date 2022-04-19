@@ -7,9 +7,9 @@ void classes::SubObj::drawLine(std::string &s,
 		return;
 	l -= y;
 	dx += x;
-	if (l < 0 || l > (short)content.size())
+	if (l <= 0 || l > (short)content.size())
 		return;
-	if (!content[l - 1].empty())
+	if (!content.at(l - 1).empty())
 		for (auto it = content[l - 1].begin(); it != content[l - 1].end(); it++) {
 			s[dx + *it] = symb;
 			clrs[dx + *it] = color;
