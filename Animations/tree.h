@@ -20,6 +20,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
+	virtual ~Stem() {}
 };
 
 class tree::Foliage : public classes::SubObj
@@ -32,6 +33,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
+	virtual ~Foliage() {}
 };
 
 class tree::Tree : public classes::Object
@@ -46,6 +48,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l) noexcept override
 	{ classes::Object::drawLine(s, clrs, l); }
+	virtual ~Tree() {}
 };
 
 #endif

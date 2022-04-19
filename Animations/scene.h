@@ -4,6 +4,7 @@
 #include "classes.h"
 #include "tree.h"
 #include "cow.h"
+#include "creeper.h"
 #include <iostream>
 #include <memory>
 #include <vector>
@@ -17,8 +18,8 @@ class scene::Scene
 {
 	std::vector<std::shared_ptr<classes::Object>> objects;
 public:
-	Scene(int);
-	void run(short);
+	Scene(short, short, short);
+	void run(int);
 };
 
 #endif

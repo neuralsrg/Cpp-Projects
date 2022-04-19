@@ -25,7 +25,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
-
+	virtual ~Head() {}
 };
 
 class cow::Body : public classes::SubObj
@@ -38,6 +38,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
+	virtual ~Body() {}
 };
 
 class cow::Paw : public classes::SubObj
@@ -50,7 +51,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
-
+	virtual ~Paw() {}
 };
 
 class cow::Tail : public classes::SubObj
@@ -63,6 +64,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
+	virtual ~Tail() {}
 };
 
 class cow::Tongue : public classes::SubObj
@@ -76,7 +78,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
-
+	virtual ~Tongue() {}
 };
 
 class cow::Grass : public classes::SubObj
@@ -90,7 +92,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l, short dx) noexcept override
 	{ classes::SubObj::drawLine(s, clrs, l, dx); }
-
+	virtual ~Grass() {}
 };
 
 class cow::Cow : public classes::Object
@@ -105,6 +107,7 @@ public:
 	virtual void drawLine(std::string &s, std::vector<short> &clrs,
 			short l) noexcept override
 	{ classes::Object::drawLine(s, clrs, l); }
+	virtual ~Cow() {}
 };
 
 #endif

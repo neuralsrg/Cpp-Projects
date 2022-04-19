@@ -4,7 +4,8 @@
 #include <ostream>
 #include <iostream>
 
-namespace ansi {
+namespace ansi
+{
 	template<class CharT, class Traits>
 	constexpr
 		std::basic_ostream<CharT, Traits>& reset(std::basic_ostream<CharT, Traits>& os)

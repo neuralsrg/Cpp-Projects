@@ -1,7 +1,7 @@
 all: output
 
-output: main.o scene.o progressbar.o tree.o cow.o classes.o
-	g++ -g -Wall main.o scene.o progressbar.o tree.o cow.o classes.o -o output
+output: main.o scene.o progressbar.o tree.o cow.o creeper.o classes.o
+	g++ -g -Wall main.o scene.o progressbar.o tree.o cow.o creeper.o classes.o -o output
 
 main.o: main.cpp constants.h
 	g++ -g -Wall -c main.cpp
@@ -17,6 +17,9 @@ tree.o: tree.h tree.cpp constants.h interface.h classes.h
 
 cow.o: cow.h cow.cpp constants.h interface.h classes.h
 	g++ -g -Wall -c cow.cpp 
+
+creeper.o: creeper.h creeper.cpp constants.h interface.h classes.h
+	g++ -g -Wall -c creeper.cpp 
 
 classes.o: classes.h classes.cpp
 	g++ -g -Wall -c classes.cpp 

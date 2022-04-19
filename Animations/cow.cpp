@@ -207,8 +207,10 @@ void cow::Tongue::act(short action) noexcept
 		content[0].clear();
 		return;
 	}
-	if (content[0].empty())
+	if (content[0].empty()) {
 		content[0] = {0};
+		std::cout << "Tongut spawned\n";
+	}
 	else
 		content[0].clear();
 }

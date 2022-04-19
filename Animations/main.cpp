@@ -5,7 +5,7 @@
 #include "scene.h"
 #include "tree.h"
 
-int main()
+int main(int argc, const char *argv[])
 {
 	/*
 	pb::ProgressBar pbar(1, 100);
@@ -16,7 +16,9 @@ int main()
 		std::system("clear");
 	}
 	*/
-	std::srand(31);
-	scene::Scene sc(2);
-	sc.run(30000);
+	std::srand(89); //32
+	if (argc != 5)
+		exit(1);
+	scene::Scene sc(atoi(argv[1]), atoi(argv[2]), atoi(argv[3]));
+	sc.run(atoi(argv[4]));
 }

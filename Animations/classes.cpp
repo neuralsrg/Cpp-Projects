@@ -3,6 +3,8 @@
 void classes::SubObj::drawLine(std::string &s,
 		std::vector<short> &clrs, short l, short dx) noexcept
 {
+	if (content.empty())
+		return;
 	l -= y;
 	dx += x;
 	if (l < 0 || l > (short)content.size())

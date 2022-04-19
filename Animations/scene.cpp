@@ -6,13 +6,26 @@
 
 extern const char* const constants::colors[4];
 
-scene::Scene::Scene(int obj) : objects(obj)
+scene::Scene::Scene(short trees, short cows, short creepers) :
+	objects(trees + cows + creepers)
 {
-	objects[0] = std::make_shared<tree::Tree>(40, 10);
-	objects[1] = std::make_shared<cow::Cow>(50, 20);
+	for (int i = 0; i < trees; ++i) {
+		objects[i] = std::make_shared<tree::Tree>(std::rand() % (constants::WIDTH - 22),
+				std::rand() % (constants::HEIGHT - 10) + 10);
+	}
+	for (int i = 0; i < cows; ++i) {
+		objects[trees + i] =
+			std::make_shared<cow::Cow>(std::rand() % (constants::WIDTH - 50),
+				std::rand() % (constants::HEIGHT - 12) + 12);
+	}
+	for (int i = 0; i < creepers; ++i) {
+		objects[trees + cows + i] =
+			std::make_shared<creeper::Creeper>(std::rand() % (constants::WIDTH - 30),
+				std::rand() % (constants::HEIGHT - 18) + 18);
+	}
 }
 
-void scene::Scene::run(short ms)
+void scene::Scene::run(int ms)
 {
 	auto srt {
 		[](std::shared_ptr<classes::Object> &o1, std::shared_ptr<classes::Object> &o2)

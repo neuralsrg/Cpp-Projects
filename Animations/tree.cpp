@@ -21,11 +21,8 @@ tree::Foliage::Foliage() : SubObj(0, 5, '+', constants::CLR_GREEN, 5)
 	content[0] = {2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22};
 	content[1] = content[0];
 	content[2].assign(content[0].begin() + 1, content[0].end() - 1);
-	//content[2] = {3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21};
 	content[3].assign(content[0].begin() + 5, content[0].end() - 5);
-	//content[3] = {7,8,9,10,11,12,13,14,15,16,17};
 	content[4].assign(content[0].begin() + 8, content[0].end() - 8);
-	//content[4] = {10,11,12,13,14};
 }
 
 void tree::Foliage::act(short state) noexcept
@@ -44,7 +41,6 @@ void tree::Foliage::act(short state) noexcept
 		[](short &n) { n -= 2; }
 	};
 
-	//std::cout << "Called act() with state = " << state << std::endl;
 	switch(state) {
 		case constants::TREE_CALM:
 			return;
