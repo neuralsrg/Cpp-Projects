@@ -29,7 +29,12 @@ void scene::Scene::run(int ms)
 {
 	auto srt {
 		[](std::shared_ptr<classes::Object> &o1, std::shared_ptr<classes::Object> &o2)
-		{ return o1->priority <= o2->priority; }
+		{
+			if (o1 && o2)
+				return o1->priority <= o2->priority;
+			else 
+				return false;
+		}
 	};
 
 	pb::ProgressBar pbar(1, ms / constants::DELAY);
