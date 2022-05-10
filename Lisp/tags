@@ -1,0 +1,26 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+EXP_H_SENTRY	Exp.h	2;"	d
+Exp	Exp.h	/^    Exp(lisp::exp_type type = Symbol) : type(type), env(0) {}$/;"	f	class:lisp::Exp
+Exp	Exp.h	/^    Exp(lisp::exp_type type, const std::string & val) : type(type), val(val), env(0) {}$/;"	f	class:lisp::Exp
+Exp	Exp.h	/^    Exp(lisp::proc_type proc) : type(Proc), proc(proc), env(0) {}$/;"	f	class:lisp::Exp
+Exp	Exp.h	/^class lisp::Exp$/;"	c	class:lisp
+Lambda	namespace.h	/^	enum exp_type { Symbol, Number, List, Proc, Lambda };$/;"	e	enum:lisp::exp_type
+List	namespace.h	/^	enum exp_type { Symbol, Number, List, Proc, Lambda };$/;"	e	enum:lisp::exp_type
+NAMESPACE_H_SENTRY	namespace.h	2;"	d
+Number	namespace.h	/^	enum exp_type { Symbol, Number, List, Proc, Lambda };$/;"	e	enum:lisp::exp_type
+Proc	namespace.h	/^	enum exp_type { Symbol, Number, List, Proc, Lambda };$/;"	e	enum:lisp::exp_type
+Symbol	namespace.h	/^	enum exp_type { Symbol, Number, List, Proc, Lambda };$/;"	e	enum:lisp::exp_type
+env	Exp.h	/^	lisp::Env * env;$/;"	m	class:lisp::Exp
+exp_type	namespace.h	/^	enum exp_type { Symbol, Number, List, Proc, Lambda };$/;"	g	namespace:lisp
+lisp	namespace.h	/^namespace lisp$/;"	n
+list	Exp.h	/^	std::vector<Exp> list;$/;"	m	class:lisp::Exp
+map	namespace.h	/^	typedef std::map<std::string, Exp> map;$/;"	t	namespace:lisp
+proc	Exp.h	/^	proc_type proc;$/;"	m	class:lisp::Exp
+proc_type	namespace.h	/^	typedef Exp (*proc_type)(const std::vector<Exp> &);$/;"	t	namespace:lisp
+type	Exp.h	/^    exp_type type;$/;"	m	class:lisp::Exp
+val	Exp.h	/^	std::string val;$/;"	m	class:lisp::Exp
