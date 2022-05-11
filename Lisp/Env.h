@@ -13,13 +13,12 @@ class lisp::Env {
 
 public:
     Env(std::shared_ptr<Env> outer = nullptr) : outer_(outer) {}
-    Env(const ExpVector &parms, const ExpVector &args, Env *outer);
+    Env(const ExpVector &parms, const ExpVector &args, std::shared_ptr<Env> outer);
 
     Exp & operator[] (const std::string &str) { return env_[str]; }
 
     map& find(const std::string & var);
-	void map_constants(Env & env);
+	void map_constants();
 };
 
-Exp eval(Exp x, Env * env);
 #endif
