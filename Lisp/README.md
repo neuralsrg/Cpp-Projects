@@ -16,3 +16,12 @@ Inspired by Peter Norvig's [article](http://norvig.com/lispy.html).
 `Environment` s a mapping of {variable: value}.
 
 Every program must be `bye`-terminated!
+
+### Testing:
+```
+./output < test1.lisp
+./output < test2.lisp
+./output < test3.lisp
+./output < test4.lisp
+./output < test5.lisp
+```
