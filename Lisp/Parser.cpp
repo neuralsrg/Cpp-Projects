@@ -101,5 +101,8 @@ void lisp::Parser::repl(const std::string & prompt, std::shared_ptr<Env> env)
 		catch(const char * s) {
 			std::cout << "[Exception] " << s << std::endl;
 		}
+		catch(const std::string s) {
+			std::cout << "[Exception] " << s << std::endl;
+		}
 	}
 }

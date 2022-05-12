@@ -190,12 +190,12 @@ void lisp::Env::map_constants()
 	(*this)["cdar"] = Exp(proc_cdar);        (*this)["cddr"] = Exp(&proc_cddr);
 	(*this)["caddr"]= Exp(&proc_caddr);      (*this)["first"]= Exp(&proc_car);
 	(*this)["second"]= Exp(&proc_cadr);      (*this)["third"]= Exp(&proc_caddr);
-    (*this)["list"] = Exp(&proc_list);       (*this)["+"]    = Exp(&proc_add);
-    (*this)["-"]    = Exp(&proc_sub);        (*this)["*"]    = Exp(&proc_mul);
-    (*this)["/"]    = Exp(&proc_div);        (*this)[">"]    = Exp(&proc_greater);
+	(*this)["rest"] = Exp(&proc_cdr);        (*this)["list"] = Exp(&proc_list);
+	(*this)["+"]    = Exp(&proc_add);        (*this)["-"]    = Exp(&proc_sub);
+	(*this)["*"]    = Exp(&proc_mul);        (*this)["/"]    = Exp(&proc_div);
+	(*this)[">"]    = Exp(&proc_greater);    (*this)[">="]   = Exp(&proc_greater_equal);
 	(*this)["="]    = Exp(&proc_equal);      (*this)["/="]   = Exp(&proc_not_equal);
     (*this)["<"]    = Exp(&proc_less);       (*this)["<="]   = Exp(&proc_less_equal);
-	(*this)[">="]   = Exp(&proc_greater_equal);
 }
 
 Exp lisp::eval(Exp x, std::shared_ptr<Env> env)
@@ -211,9 +211,11 @@ Exp lisp::eval(Exp x, std::shared_ptr<Env> env)
 			return x.list[1];
 		if (x.list[0].val == "eval")
 			return eval(eval(x.list[1], env), env);
-		if (x.list[0].val == "if")
-			return eval(eval(x.list[1], env).val == "#f" ?
+		if (x.list[0].val == "if") {
+			auto cnd = eval(x.list[1], env);
+			return eval((cnd.val == "#f" || cnd.val == "nil") ?
 					(x.list.size() < 4 ? nil : x.list[3]) : x.list[2], env);
+		}
 		if (x.list[0].val == "cond") {
 			for (auto it_outer = x.list.begin() + 1; it_outer != x.list.end();
 					++it_outer) {
@@ -257,6 +259,8 @@ Exp lisp::eval(Exp x, std::shared_ptr<Env> env)
 	for (auto exp = x.list.begin() + 1; exp != x.list.end(); ++exp)
 		exps.push_back(eval(*exp, env));
 	if (proc.type == Lambda) {
+		if (proc.list[1].list.size() != exps.size())
+			throw "wrong argument list";
 		return eval(proc.list[2],
 				std::make_shared<Env>(proc.list[1].list, exps, proc.env));
 	}

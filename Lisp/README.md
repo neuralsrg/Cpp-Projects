@@ -15,3 +15,4 @@ Inspired by Peter Norvig's [article](http://norvig.com/lispy.html).
 ### Env:
 `Environment` s a mapping of {variable: value}.
 
+Every program must be `bye`-terminated!
